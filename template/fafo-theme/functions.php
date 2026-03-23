@@ -319,3 +319,232 @@ function fafo_open_graph() {
     }
 }
 add_action( 'wp_head', 'fafo_open_graph' );
+
+// ============================================================
+// INCLUDE SETUP / HELPERS
+// ============================================================
+require_once get_template_directory() . '/inc/setup-categories.php';
+require_once get_template_directory() . '/inc/template-tags.php';
+
+// ============================================================
+// VIDEO CUSTOM POST TYPE
+// ============================================================
+function fafo_register_video_post_type() {
+    register_post_type( 'fafo_video', [
+        'labels' => [
+            'name'               => __( 'Videos', 'fafo' ),
+            'singular_name'      => __( 'Video', 'fafo' ),
+            'add_new'            => __( 'Add New Video', 'fafo' ),
+            'add_new_item'       => __( 'Add New Video', 'fafo' ),
+            'edit_item'          => __( 'Edit Video', 'fafo' ),
+            'new_item'           => __( 'New Video', 'fafo' ),
+            'view_item'          => __( 'View Video', 'fafo' ),
+            'search_items'       => __( 'Search Videos', 'fafo' ),
+            'not_found'          => __( 'No videos found', 'fafo' ),
+            'not_found_in_trash' => __( 'No videos in trash', 'fafo' ),
+        ],
+        'public'       => true,
+        'has_archive'  => true,
+        'rewrite'      => [ 'slug' => 'video' ],
+        'supports'     => [ 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' ],
+        'menu_icon'    => 'dashicons-video-alt3',
+        'show_in_rest' => true,
+    ] );
+
+    // Video taxonomy for categories
+    register_taxonomy( 'video_category', 'fafo_video', [
+        'labels' => [
+            'name'          => __( 'Video Categories', 'fafo' ),
+            'singular_name' => __( 'Video Category', 'fafo' ),
+        ],
+        'public'       => true,
+        'hierarchical' => true,
+        'rewrite'      => [ 'slug' => 'video-category' ],
+        'show_in_rest' => true,
+    ] );
+}
+add_action( 'init', 'fafo_register_video_post_type' );
+
+// ============================================================
+// VIDEO: Meta box for embed URL
+// ============================================================
+function fafo_video_meta_boxes() {
+    add_meta_box(
+        'fafo_video_url',
+        __( 'Video URL (YouTube, Rumble, Vimeo, etc.)', 'fafo' ),
+        'fafo_video_url_callback',
+        'fafo_video',
+        'normal',
+        'high'
+    );
+    add_meta_box(
+        'fafo_video_duration',
+        __( 'Video Details', 'fafo' ),
+        'fafo_video_details_callback',
+        'fafo_video',
+        'side'
+    );
+}
+add_action( 'add_meta_boxes', 'fafo_video_meta_boxes' );
+
+function fafo_video_url_callback( $post ) {
+    wp_nonce_field( 'fafo_video_meta', 'fafo_video_nonce' );
+    $url = get_post_meta( $post->ID, '_fafo_video_url', true );
+    ?>
+    <p>
+        <label for="fafo_video_url" style="font-weight:600;">Paste video URL from YouTube, Rumble, Vimeo, or direct MP4:</label><br>
+        <input type="url" id="fafo_video_url" name="fafo_video_url" value="<?php echo esc_attr( $url ); ?>"
+               placeholder="https://rumble.com/embed/..." style="width:100%;margin-top:6px;">
+    </p>
+    <p style="color:#666;font-size:12px;">Supports: YouTube, Rumble, Vimeo, Dailymotion, and direct MP4/WebM URLs.</p>
+    <?php
+}
+
+function fafo_video_details_callback( $post ) {
+    $duration = get_post_meta( $post->ID, '_fafo_video_duration', true );
+    $source   = get_post_meta( $post->ID, '_fafo_video_source', true );
+    ?>
+    <p>
+        <label style="font-weight:600;">Duration:</label><br>
+        <input type="text" name="fafo_video_duration" value="<?php echo esc_attr( $duration ); ?>"
+               placeholder="e.g. 12:34" style="width:100%;">
+    </p>
+    <p>
+        <label style="font-weight:600;">Source:</label><br>
+        <select name="fafo_video_source" style="width:100%;">
+            <option value="rumble" <?php selected( $source, 'rumble' ); ?>>Rumble</option>
+            <option value="youtube" <?php selected( $source, 'youtube' ); ?>>YouTube</option>
+            <option value="vimeo" <?php selected( $source, 'vimeo' ); ?>>Vimeo</option>
+            <option value="direct" <?php selected( $source, 'direct' ); ?>>Direct MP4</option>
+            <option value="other" <?php selected( $source, 'other' ); ?>>Other</option>
+        </select>
+    </p>
+    <?php
+}
+
+function fafo_video_meta_save( $post_id ) {
+    if ( ! isset( $_POST['fafo_video_nonce'] ) ) return;
+    if ( ! wp_verify_nonce( $_POST['fafo_video_nonce'], 'fafo_video_meta' ) ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+
+    if ( isset( $_POST['fafo_video_url'] ) ) {
+        update_post_meta( $post_id, '_fafo_video_url', esc_url_raw( $_POST['fafo_video_url'] ) );
+    }
+    if ( isset( $_POST['fafo_video_duration'] ) ) {
+        update_post_meta( $post_id, '_fafo_video_duration', sanitize_text_field( $_POST['fafo_video_duration'] ) );
+    }
+    if ( isset( $_POST['fafo_video_source'] ) ) {
+        update_post_meta( $post_id, '_fafo_video_source', sanitize_text_field( $_POST['fafo_video_source'] ) );
+    }
+}
+add_action( 'save_post', 'fafo_video_meta_save' );
+
+// ============================================================
+// VIDEO: Render player from URL
+// ============================================================
+function fafo_render_video_player( $post_id = null ) {
+    $post_id = $post_id ?? get_the_ID();
+    $url     = get_post_meta( $post_id, '_fafo_video_url', true );
+    $source  = get_post_meta( $post_id, '_fafo_video_source', true );
+
+    if ( empty( $url ) ) return '';
+
+    // Direct MP4 / WebM
+    if ( $source === 'direct' || preg_match( '/\.(mp4|webm|ogv|ogg)(\?|$)/i', $url ) ) {
+        return '<div class="fafo-video-player">'
+             . '<video controls preload="metadata" style="width:100%;max-width:100%;border-radius:4px;background:#000;">'
+             . '<source src="' . esc_url( $url ) . '" type="video/mp4">'
+             . 'Your browser does not support HTML5 video.'
+             . '</video></div>';
+    }
+
+    // Rumble embed
+    if ( strpos( $url, 'rumble.com' ) !== false ) {
+        // Convert watch URL to embed URL
+        if ( strpos( $url, '/embed/' ) === false ) {
+            preg_match( '/rumble\.com\/([a-zA-Z0-9_-]+)/', $url, $m );
+            if ( ! empty( $m[1] ) ) {
+                $url = 'https://rumble.com/embed/' . $m[1] . '/';
+            }
+        }
+        return '<div class="fafo-video-player" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">'
+             . '<iframe src="' . esc_url( $url ) . '" frameborder="0" allowfullscreen '
+             . 'style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:4px;"></iframe></div>';
+    }
+
+    // WordPress oEmbed handles YouTube, Vimeo, Dailymotion, etc.
+    $oembed = wp_oembed_get( $url );
+    if ( $oembed ) {
+        return '<div class="fafo-video-player">' . $oembed . '</div>';
+    }
+
+    // Generic iframe fallback
+    return '<div class="fafo-video-player" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">'
+         . '<iframe src="' . esc_url( $url ) . '" frameborder="0" allowfullscreen '
+         . 'style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>';
+}
+
+// ============================================================
+// HELPER: Get category link by slug safely
+// ============================================================
+function fafo_cat_link( $slug ) {
+    $cat = get_category_by_slug( $slug );
+    if ( $cat ) return get_category_link( $cat->term_id );
+    return home_url( '/category/' . $slug . '/' );
+}
+
+function fafo_page_link( $slug ) {
+    $page = get_page_by_path( $slug );
+    if ( $page ) return get_permalink( $page->ID );
+    return home_url( '/' . $slug . '/' );
+}
+
+// ============================================================
+// THEME ACTIVATION: create categories and pages
+// ============================================================
+add_action( 'after_switch_theme', 'fafo_theme_activation_setup' );
+function fafo_theme_activation_setup() {
+    fafo_create_categories();
+    fafo_create_video_categories();
+    fafo_create_pages();
+    flush_rewrite_rules();
+}
+
+// Run once on init if not already done
+add_action( 'init', 'fafo_maybe_run_setup', 999 );
+function fafo_maybe_run_setup() {
+    if ( ! get_option( 'fafo_setup_complete' ) ) {
+        fafo_create_categories();
+        fafo_create_video_categories();
+        fafo_create_pages();
+        update_option( 'fafo_setup_complete', '1.0' );
+        flush_rewrite_rules();
+    }
+}
+
+// ============================================================
+// ENQUEUE: Video player CSS additions
+// ============================================================
+add_action( 'wp_enqueue_scripts', function() {
+    wp_add_inline_style( 'fafo-style', '
+        .fafo-video-player { margin: 0 0 24px; }
+        .fafo-video-player iframe,
+        .fafo-video-player video { max-width: 100%; border-radius: 4px; }
+        .video-card { background:#fff; border-radius:6px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); transition:transform .2s,box-shadow .2s; }
+        .video-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.13); }
+        .video-card-thumb { position:relative; padding-bottom:56.25%; background:#000; overflow:hidden; }
+        .video-card-thumb img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+        .video-play-btn { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:60px; height:60px; background:rgba(200,16,46,.9); border-radius:50%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+        .video-play-btn::after { content:""; border-left:22px solid #fff; border-top:13px solid transparent; border-bottom:13px solid transparent; margin-left:4px; }
+        .video-duration { position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,.75); color:#fff; font-size:11px; padding:2px 6px; border-radius:3px; }
+        .video-card-body { padding:16px; }
+        .video-card-body h3 { font-size:1rem; margin:0 0 8px; line-height:1.4; }
+        .video-card-body h3 a { color:#002868; text-decoration:none; }
+        .video-card-body h3 a:hover { color:#C8102E; }
+        .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; }
+        .video-featured-player { background:#000; border-radius:8px; overflow:hidden; margin-bottom:32px; }
+        @media(max-width:600px){ .video-grid { grid-template-columns:1fr; } }
+    ' );
+}, 20 );
+

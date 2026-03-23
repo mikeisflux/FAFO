@@ -41,14 +41,15 @@
             <div class="footer-col">
                 <h5>Topics</h5>
                 <ul>
-                    <li><a href="#">Politics</a></li>
-                    <li><a href="#">Economy &amp; Finance</a></li>
-                    <li><a href="#">National Security</a></li>
-                    <li><a href="#">Border &amp; Immigration</a></li>
-                    <li><a href="#">2nd Amendment</a></li>
-                    <li><a href="#">Faith &amp; Culture</a></li>
-                    <li><a href="#">Election Integrity</a></li>
-                    <li><a href="#">Opinion</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('politics') ); ?>">Politics</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('economy') ); ?>">Economy &amp; Finance</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('national-security') ); ?>">National Security</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('border-immigration') ); ?>">Border &amp; Immigration</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('2nd-amendment') ); ?>">2nd Amendment</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('faith-culture') ); ?>">Faith &amp; Culture</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('election-integrity') ); ?>">Election Integrity</a></li>
+                    <li><a href="<?php echo esc_url( fafo_cat_link('opinion') ); ?>">Opinion</a></li>
+                    <li><a href="<?php echo esc_url( get_post_type_archive_link('fafo_video') ); ?>">Video</a></li>
                 </ul>
             </div>
 
@@ -56,14 +57,14 @@
             <div class="footer-col">
                 <h5>FAFO Network</h5>
                 <ul>
-                    <li><a href="#">About FAFO</a></li>
-                    <li><a href="#">Our Team</a></li>
-                    <li><a href="#">Advertise</a></li>
-                    <li><a href="#">Press Room</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Newsletter</a></li>
-                    <li><a href="#">FAFO Merch</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('about') ); ?>">About FAFO</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('team') ); ?>">Our Team</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('advertise') ); ?>">Advertise</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('press') ); ?>">Press Room</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('contact') ); ?>">Contact Us</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('careers') ); ?>">Careers</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('newsletter') ); ?>">Newsletter</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('merch') ); ?>">FAFO Merch</a></li>
                 </ul>
             </div>
 
@@ -71,12 +72,12 @@
             <div class="footer-col">
                 <h5>Legal</h5>
                 <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Cookie Policy</a></li>
-                    <li><a href="#">Corrections Policy</a></li>
-                    <li><a href="#">DMCA / Takedowns</a></li>
-                    <li><a href="#">Tip Line</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('privacy-policy') ); ?>">Privacy Policy</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('terms-of-service') ); ?>">Terms of Service</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('cookie-policy') ); ?>">Cookie Policy</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('corrections') ); ?>">Corrections Policy</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('dmca') ); ?>">DMCA / Takedowns</a></li>
+                    <li><a href="<?php echo esc_url( fafo_page_link('tip-line') ); ?>">Tip Line</a></li>
                 </ul>
 
                 <?php if ( is_active_sidebar( 'footer-3' ) ) : ?>
@@ -94,8 +95,8 @@
                 &mdash; For America First Only. All Rights Reserved.
             </span>
             <span>
-                <a href="#">Privacy</a> &bull;
-                <a href="#">Terms</a> &bull;
+                <a href="<?php echo esc_url( fafo_page_link('privacy-policy') ); ?>">Privacy</a> &bull;
+                <a href="<?php echo esc_url( fafo_page_link('terms-of-service') ); ?>">Terms</a> &bull;
                 <a href="<?php echo esc_url( get_feed_link() ); ?>">RSS</a>
             </span>
         </div>
