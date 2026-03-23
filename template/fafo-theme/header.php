@@ -146,7 +146,16 @@
 // Fallback nav when no menu assigned
 function fafo_fallback_nav() {
     echo '<ul class="nav-menu">';
-    $pages = [ 'Home' => home_url('/'), 'Politics' => '#', 'Economy' => '#', 'National Security' => '#', 'Opinion' => '#', 'Video' => '#', 'About' => '#' ];
+    $pages = [
+        'Home'              => home_url('/'),
+        'Politics'          => fafo_cat_link('politics'),
+        'Economy'           => fafo_cat_link('economy'),
+        'National Security' => fafo_cat_link('national-security'),
+        'Border'            => fafo_cat_link('border-immigration'),
+        'Opinion'           => fafo_cat_link('opinion'),
+        'Video'             => get_post_type_archive_link('fafo_video') ?: home_url('/video/'),
+        'About'             => fafo_page_link('about'),
+    ];
     foreach ( $pages as $label => $url ) {
         echo '<li><a href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
     }
