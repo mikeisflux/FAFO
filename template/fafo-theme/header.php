@@ -60,10 +60,18 @@
     <div class="container">
         <div class="header-inner">
 
-            <!-- Logo -->
+            <!-- Logo: custom upload takes priority, SVG badge is the fallback -->
+            <?php if ( has_custom_logo() ) : ?>
+                <div class="site-logo site-logo--custom">
+                    <?php the_custom_logo(); ?>
+                    <span class="site-tagline site-tagline--custom">
+                        <?php echo esc_html( get_theme_mod( 'fafo_header_tagline', 'FOR AMERICA FIRST ONLY' ) ); ?>
+                    </span>
+                </div>
+            <?php else : ?>
             <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="site-logo" rel="home">
 
-                <!-- Eagle SVG Emblem -->
+                <!-- Eagle SVG Emblem (default fallback) -->
                 <svg class="logo-emblem" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <!-- Shield background -->
                     <path d="M50 5 L90 22 L90 58 Q90 82 50 96 Q10 82 10 58 L10 22 Z" fill="#002868"/>
@@ -96,6 +104,7 @@
                     </span>
                 </div>
             </a>
+            <?php endif; ?>
 
             <!-- Flag stripes decoration -->
             <div class="header-flags" aria-hidden="true">

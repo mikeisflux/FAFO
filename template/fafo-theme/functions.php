@@ -602,6 +602,14 @@ add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_p
 // ============================================================
 add_action( 'wp_enqueue_scripts', function() {
     wp_add_inline_style( 'fafo-style', '
+        /* ---- Custom logo (uploaded via Customize → Site Identity) ---- */
+        .site-logo--custom { display:flex; align-items:center; gap:14px; text-decoration:none; }
+        .site-logo--custom .custom-logo-link { display:flex; align-items:center; flex-shrink:0; }
+        .site-logo--custom .custom-logo { max-height:80px; width:auto; max-width:320px; display:block; }
+        .site-logo--custom .site-tagline--custom { font-family:var(--font-head); font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.65); display:block; margin-top:4px; }
+        @media(max-width:600px){ .site-logo--custom .custom-logo { max-height:52px; } }
+
+        /* ---- Video player ---- */
         .fafo-video-player { margin: 0 0 24px; }
         .fafo-video-player iframe,
         .fafo-video-player video { max-width: 100%; border-radius: 4px; }
