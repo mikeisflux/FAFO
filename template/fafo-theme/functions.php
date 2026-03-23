@@ -408,6 +408,57 @@ function fafo_customize_register( $wp_customize ) {
 add_action( 'customize_register', 'fafo_customize_register' );
 
 // ============================================================
+// SIDEBAR WIDGET: About FAFO (reads from FAFO Settings)
+// ============================================================
+function fafo_widget_about() {
+    $image_id = get_option( 'fafo_about_widget_image' );
+    $title    = get_option( 'fafo_about_widget_title', 'About FAFO' );
+    $text     = get_option( 'fafo_about_widget_text',  'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.' );
+    ?>
+    <div class="widget">
+        <h3 class="widget-title"><i class="fas fa-flag"></i> <?php echo esc_html( $title ); ?></h3>
+        <div class="widget-body">
+            <div class="about-widget">
+                <?php if ( $image_id ) :
+                    echo wp_get_attachment_image( $image_id, 'medium', false, [
+                        'style' => 'max-width:100%;height:auto;display:block;margin:0 auto 12px;border-radius:4px;',
+                        'alt'   => esc_attr( get_bloginfo('name') ),
+                    ] );
+                else : ?>
+                <div class="fafo-big">F<span>A</span>FO</div>
+                <?php endif; ?>
+                <p><?php echo esc_html( $text ); ?></p>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+// ============================================================
+// SIDEBAR WIDGET: Newsletter signup (reads from FAFO Settings)
+// ============================================================
+function fafo_widget_newsletter() {
+    $heading  = get_option( 'fafo_newsletter_heading',  'JOIN THE MOVEMENT' );
+    $subtext  = get_option( 'fafo_newsletter_subtext',  'Get FAFO breaking news delivered straight to your inbox. No censorship.' );
+    $btn_text = get_option( 'fafo_newsletter_btn_text', 'SUBSCRIBE FREE' );
+    ?>
+    <div class="widget">
+        <h3 class="widget-title"><i class="fas fa-envelope"></i> Stay Informed</h3>
+        <div class="newsletter-widget">
+            <h4><?php echo esc_html( $heading ); ?></h4>
+            <p><?php echo esc_html( $subtext ); ?></p>
+            <form id="fafoNewsletterForm" action="#" method="post">
+                <input type="email" name="email" placeholder="Your email address..." required>
+                <button type="submit">
+                    <i class="fas fa-bolt"></i> <?php echo esc_html( $btn_text ); ?>
+                </button>
+            </form>
+        </div>
+    </div>
+    <?php
+}
+
+// ============================================================
 // HELPER: Get reading time
 // ============================================================
 function fafo_reading_time( $post_id = null ) {

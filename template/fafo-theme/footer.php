@@ -6,8 +6,8 @@
 <!-- PATRIOT QUOTE BANNER -->
 <section class="opinion-banner" aria-label="Patriot Quote">
     <div class="container">
-        <h3>★ FAFO NEWS ★</h3>
-        <p>"The tree of liberty must be refreshed from time to time with the truth." — America First</p>
+        <h3><?php echo esc_html( get_option( 'fafo_patriot_quote_badge', '★ FAFO NEWS ★' ) ); ?></h3>
+        <p><?php echo esc_html( get_option( 'fafo_patriot_quote_text', '"The tree of liberty must be refreshed from time to time with the truth." — America First' ) ); ?></p>
     </div>
 </section>
 

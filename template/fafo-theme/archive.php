@@ -78,15 +78,7 @@
 </div><!-- .main-content -->
 
 <aside class="sidebar" role="complementary">
-    <div class="widget">
-        <h3 class="widget-title"><i class="fas fa-flag"></i> About FAFO</h3>
-        <div class="widget-body">
-            <div class="about-widget">
-                <div class="fafo-big">F<span>A</span>FO</div>
-                <p>For America First Only.</p>
-            </div>
-        </div>
-    </div>
+    <?php fafo_widget_about(); ?>
 
     <div class="widget">
         <h3 class="widget-title"><i class="fas fa-fire"></i> Trending</h3>

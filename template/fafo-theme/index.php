@@ -107,7 +107,7 @@ $hero_query = new WP_Query( [
         <!-- LATEST NEWS GRID -->
         <section aria-label="Latest Stories">
             <div class="section-header">
-                <h2>Latest Stories</h2>
+                <h2><?php echo esc_html( get_option( 'fafo_homepage_section1_title', 'Latest Stories' ) ); ?></h2>
                 <a href="<?php echo esc_url( get_permalink( get_option('page_for_posts') ) ); ?>" class="view-all">
                     View All <i class="fas fa-arrow-right"></i>
                 </a>
@@ -176,7 +176,7 @@ $hero_query = new WP_Query( [
         <?php if ( $opinion_query->have_posts() ) : ?>
         <section aria-label="Opinion and Analysis" style="margin-top:40px;">
             <div class="section-header">
-                <h2>Opinion &amp; Analysis</h2>
+                <h2><?php echo esc_html( get_option( 'fafo_homepage_section2_title', 'Opinion & Analysis' ) ); ?></h2>
                 <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
             </div>
 
@@ -227,31 +227,8 @@ $hero_query = new WP_Query( [
     <!-- SIDEBAR -->
     <aside class="sidebar" role="complementary" aria-label="Sidebar">
 
-        <!-- ABOUT FAFO WIDGET -->
-        <div class="widget">
-            <h3 class="widget-title"><i class="fas fa-flag"></i> About FAFO</h3>
-            <div class="widget-body">
-                <div class="about-widget">
-                    <div class="fafo-big">F<span>A</span>FO</div>
-                    <p>For America First Only &mdash; Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEWSLETTER WIDGET -->
-        <div class="widget">
-            <h3 class="widget-title"><i class="fas fa-envelope"></i> Stay Informed</h3>
-            <div class="newsletter-widget">
-                <h4>JOIN THE MOVEMENT</h4>
-                <p>Get FAFO breaking news delivered straight to your inbox. No censorship.</p>
-                <form id="fafoNewsletterForm" action="#" method="post">
-                    <input type="email" name="email" placeholder="Your email address..." required>
-                    <button type="submit">
-                        <i class="fas fa-bolt"></i> SUBSCRIBE FREE
-                    </button>
-                </form>
-            </div>
-        </div>
+        <?php fafo_widget_about(); ?>
+        <?php fafo_widget_newsletter(); ?>
 
         <!-- TRENDING WIDGET -->
         <div class="widget">

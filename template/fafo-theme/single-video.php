@@ -200,15 +200,7 @@ if ( $related->have_posts() ) : ?>
         </div>
     </div>
 
-    <div class="widget">
-        <h3 class="widget-title"><i class="fas fa-flag"></i> About FAFO</h3>
-        <div class="widget-body">
-            <div class="about-widget">
-                <div class="fafo-big">F<span>A</span>FO</div>
-                <p>Bold, unapologetic conservative news. For America First Only.</p>
-            </div>
-        </div>
-    </div>
+    <?php fafo_widget_about(); ?>
 
     <?php if ( is_active_sidebar('sidebar-main') ) dynamic_sidebar('sidebar-main'); ?>
 </aside>

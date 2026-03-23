@@ -67,10 +67,21 @@ function fafo_save_all_settings( $post ) {
     }
 
     $text_fields = [
-        'fafo_header_tagline', 'fafo_alert_text', 'fafo_about_widget_text',
+        'fafo_header_tagline', 'fafo_alert_text',
+        // About widget
+        'fafo_about_widget_title', 'fafo_about_widget_text',
+        // Newsletter widget
+        'fafo_newsletter_heading', 'fafo_newsletter_subtext', 'fafo_newsletter_btn_text',
+        // Patriot quote banner (footer)
+        'fafo_patriot_quote_badge', 'fafo_patriot_quote_text',
+        // Homepage section titles
+        'fafo_homepage_section1_title', 'fafo_homepage_section2_title',
+        // Footer text
         'fafo_footer_description', 'fafo_copyright_text',
+        // Social
         'fafo_social_twitter', 'fafo_social_facebook', 'fafo_social_truth',
         'fafo_social_rumble', 'fafo_social_telegram', 'fafo_social_youtube',
+        // Contact
         'fafo_contact_newsroom', 'fafo_contact_tips', 'fafo_contact_advertise',
         'fafo_contact_legal',   'fafo_contact_careers', 'fafo_contact_press',
     ];
@@ -92,7 +103,7 @@ function fafo_save_all_settings( $post ) {
     }
 
     // Image attachment IDs
-    $image_fields = [ 'fafo_footer_logo', 'fafo_og_default_image' ];
+    $image_fields = [ 'fafo_footer_logo', 'fafo_og_default_image', 'fafo_about_widget_image' ];
     foreach ( $image_fields as $f ) {
         if ( isset( $post[ $f ] ) ) {
             update_option( $f, absint( $post[ $f ] ) );
@@ -245,11 +256,34 @@ function _fafo_endsection() { echo '</table>'; }
 
 // ── TAB: Branding ──────────────────────────────────────────
 function _fafo_tab_branding() {
-    _fafo_section( 'Site Identity', 'Text and copy that appear throughout the site.' );
-    _fafo_field( 'Header Tagline',        'fafo_header_tagline',     get_option('fafo_header_tagline', get_theme_mod('fafo_header_tagline','FOR AMERICA FIRST ONLY')), 'text', 'FOR AMERICA FIRST ONLY', 'Displayed next to the logo in the site header.' );
-    _fafo_field( 'Footer Tagline',        'fafo_footer_description', get_option('fafo_footer_description','FAFO News delivers bold, unapologetic conservative reporting for American patriots.'), 'textarea', '', 'Paragraph of text in the footer brand column.' );
-    _fafo_field( 'Copyright Text',        'fafo_copyright_text',     get_option('fafo_copyright_text',''), 'text', 'FAFO News — For America First Only. All Rights Reserved.', 'Overrides the auto-generated copyright line in the footer. Leave blank for default.' );
-    _fafo_field( 'Sidebar "About" Blurb', 'fafo_about_widget_text',  get_option('fafo_about_widget_text','For America First Only.'), 'text', 'For America First Only.', 'Short line shown in the "About FAFO" sidebar widget on category/archive pages.' );
+    _fafo_section( 'Site Identity', 'Core text and copy displayed throughout the site.' );
+    _fafo_field( 'Header Tagline',         'fafo_header_tagline',       get_option('fafo_header_tagline', get_theme_mod('fafo_header_tagline','FOR AMERICA FIRST ONLY')), 'text', 'FOR AMERICA FIRST ONLY', 'Displayed next to the logo in the site header.' );
+    _fafo_endsection();
+
+    _fafo_section( '"About FAFO" Sidebar Widget', 'Appears in the sidebar on every page — homepage, articles, category pages, etc. Image is set in the Images tab.' );
+    _fafo_field( 'Widget Title',    'fafo_about_widget_title', get_option('fafo_about_widget_title','About FAFO'),  'text', 'About FAFO',  'The widget heading (e.g. "About FAFO").' );
+    _fafo_field( 'Widget Body Text','fafo_about_widget_text',  get_option('fafo_about_widget_text', 'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.'), 'textarea', 'For America First Only...', 'Description shown below the logo/image in the About widget.' );
+    _fafo_endsection();
+
+    _fafo_section( '"Stay Informed" Newsletter Widget', 'Sidebar newsletter signup box on the homepage and article pages.' );
+    _fafo_field( 'Widget Heading',       'fafo_newsletter_heading',   get_option('fafo_newsletter_heading',   'JOIN THE MOVEMENT'), 'text', 'JOIN THE MOVEMENT', 'Bold headline inside the newsletter widget.' );
+    _fafo_field( 'Widget Description',   'fafo_newsletter_subtext',   get_option('fafo_newsletter_subtext',   'Get FAFO breaking news delivered straight to your inbox. No censorship.'), 'textarea', 'Get FAFO breaking news...', 'Short description line beneath the heading.' );
+    _fafo_field( 'Subscribe Button Text','fafo_newsletter_btn_text',  get_option('fafo_newsletter_btn_text',  'SUBSCRIBE FREE'), 'text', 'SUBSCRIBE FREE', 'Text on the subscribe button.' );
+    _fafo_endsection();
+
+    _fafo_section( 'Patriot Quote Banner', 'The decorative quote strip displayed above the footer on every page.' );
+    _fafo_field( 'Banner Badge Text', 'fafo_patriot_quote_badge', get_option('fafo_patriot_quote_badge','★ FAFO NEWS ★'), 'text', '★ FAFO NEWS ★', 'Small heading/badge above the quote.' );
+    _fafo_field( 'Quote Text',        'fafo_patriot_quote_text',  get_option('fafo_patriot_quote_text', '"The tree of liberty must be refreshed from time to time with the truth." — America First'), 'textarea', '"The tree of liberty..."', 'The quote displayed in the banner.' );
+    _fafo_endsection();
+
+    _fafo_section( 'Homepage Section Titles', 'Headings for the content sections on the homepage.' );
+    _fafo_field( 'Section 1 Title (Latest)', 'fafo_homepage_section1_title', get_option('fafo_homepage_section1_title','Latest Stories'),      'text', 'Latest Stories' );
+    _fafo_field( 'Section 2 Title (Opinion)','fafo_homepage_section2_title', get_option('fafo_homepage_section2_title','Opinion & Analysis'),   'text', 'Opinion & Analysis' );
+    _fafo_endsection();
+
+    _fafo_section( 'Footer Text', 'Text in the footer brand column and copyright bar.' );
+    _fafo_field( 'Footer Description', 'fafo_footer_description', get_option('fafo_footer_description','FAFO News delivers bold, unapologetic conservative reporting for American patriots.'), 'textarea', '', 'Paragraph in the footer brand column.' );
+    _fafo_field( 'Copyright Line',     'fafo_copyright_text',     get_option('fafo_copyright_text',''), 'text', 'FAFO News — For America First Only. All Rights Reserved.', 'Leave blank for auto-generated year + site name.' );
     _fafo_endsection();
 }
 
@@ -275,11 +309,14 @@ function _fafo_tab_images() {
     echo '<p style="color:#444;margin-bottom:20px;">
         The <strong>header logo</strong> is set via
         <a href="' . esc_url(admin_url('customize.php?autofocus[control]=custom_logo')) . '">Appearance → Customize → Site Identity</a>.
-        Additional image slots are managed here.
+        All other image slots are managed here.
     </p>';
-    _fafo_section( 'Site Images' );
-    _fafo_image_field( 'Footer Logo',         'fafo_footer_logo',       'Shown in the footer brand column. Falls back to the text FAFO logo if not set.' );
-    _fafo_image_field( 'Default OG / Share Image', 'fafo_og_default_image', 'Used as the Open Graph image on pages that have no featured image.' );
+    _fafo_section( 'Sidebar Images' );
+    _fafo_image_field( 'About FAFO Widget Image', 'fafo_about_widget_image', 'Image displayed inside the "About FAFO" sidebar widget on every page. Falls back to the styled FAFO text graphic if not set.' );
+    _fafo_endsection();
+    _fafo_section( 'Footer &amp; Global Images' );
+    _fafo_image_field( 'Footer Logo',              'fafo_footer_logo',       'Shown in the footer brand column. Falls back to the text FAFO logo if not set.' );
+    _fafo_image_field( 'Default OG / Share Image', 'fafo_og_default_image',  'Used as the Open Graph image on pages that have no featured image.' );
     _fafo_endsection();
 }
 
@@ -323,13 +360,12 @@ function _fafo_tab_header() {
 
 // ── TAB: Footer ────────────────────────────────────────────
 function _fafo_tab_footer() {
-    _fafo_section( 'Footer Content', 'Text and image in the footer brand / left column.' );
-    _fafo_field( 'Footer Description',  'fafo_footer_description', get_option('fafo_footer_description','FAFO News delivers bold, unapologetic conservative reporting for American patriots. We cover the stories the mainstream media refuses to tell — no spin, no agenda, just the truth for the American people.'), 'textarea' );
-    _fafo_field( 'Copyright Line',      'fafo_copyright_text',     get_option('fafo_copyright_text',''),     'text', 'FAFO News — For America First Only. All Rights Reserved.' );
-    _fafo_endsection();
+    echo '<p style="color:#444;background:#f0f6ff;border:1px solid #c5d8ff;padding:12px 16px;border-radius:4px;margin-bottom:20px;">
+        Footer text (description &amp; copyright) is in the <strong>Branding</strong> tab.<br>
+        Footer logo image is in the <strong>Images</strong> tab.
+    </p>';
 
-    _fafo_section( 'Footer Logo' );
-    _fafo_image_field( 'Footer Logo Image', 'fafo_footer_logo', 'Displayed in the footer left column. Falls back to the styled FAFO text mark if not set.' );
+    _fafo_section( 'Footer Navigation Menus', 'Use <a href="' . esc_url(admin_url('nav-menus.php')) . '">Appearance → Menus</a> to edit the footer link columns. Widget areas are managed in <a href="' . esc_url(admin_url('widgets.php')) . '">Appearance → Widgets</a>.' );
     _fafo_endsection();
 }
 

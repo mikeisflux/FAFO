@@ -187,29 +187,8 @@ if ( comments_open() || get_comments_number() ) {
     </div><!-- .main-content -->
 
     <aside class="sidebar" role="complementary">
-        <!-- ABOUT FAFO WIDGET -->
-        <div class="widget">
-            <h3 class="widget-title"><i class="fas fa-flag"></i> About FAFO</h3>
-            <div class="widget-body">
-                <div class="about-widget">
-                    <div class="fafo-big">F<span>A</span>FO</div>
-                    <p>Bold, unapologetic conservative news. For America First Only.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEWSLETTER -->
-        <div class="widget">
-            <h3 class="widget-title"><i class="fas fa-envelope"></i> Stay Informed</h3>
-            <div class="newsletter-widget">
-                <h4>JOIN THE MOVEMENT</h4>
-                <p>Breaking news. No censorship.</p>
-                <form action="#" method="post">
-                    <input type="email" name="email" placeholder="Your email..." required>
-                    <button type="submit"><i class="fas fa-bolt"></i> SUBSCRIBE</button>
-                </form>
-            </div>
-        </div>
+        <?php fafo_widget_about(); ?>
+        <?php fafo_widget_newsletter(); ?>
 
         <!-- TRENDING -->
         <div class="widget">

@@ -38,15 +38,7 @@
 </div><!-- .main-content -->
 
 <aside class="sidebar" role="complementary">
-    <div class="widget">
-        <h3 class="widget-title"><i class="fas fa-flag"></i> About FAFO</h3>
-        <div class="widget-body">
-            <div class="about-widget">
-                <div class="fafo-big">F<span>A</span>FO</div>
-                <p>For America First Only &mdash; Bold conservative news without compromise.</p>
-            </div>
-        </div>
-    </div>
+    <?php fafo_widget_about(); ?>
 
     <?php if ( is_active_sidebar( 'sidebar-main' ) ) dynamic_sidebar( 'sidebar-main' ); ?>
 </aside>
