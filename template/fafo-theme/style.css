@@ -208,7 +208,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .logo-text .site-tagline {
   font-family: var(--font-ui);
-  font-size: 0.72rem;
+  font-size: 2.16rem;
   color: rgba(255,255,255,0.75);
   letter-spacing: 0.25em;
   text-transform: uppercase;

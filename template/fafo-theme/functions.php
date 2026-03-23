@@ -155,6 +155,147 @@ function fafo_widgets_init() {
 add_action( 'widgets_init', 'fafo_widgets_init' );
 
 // ============================================================
+// TEAM MEMBER CPT
+// ============================================================
+add_action( 'init', function() {
+    register_post_type( 'fafo_team', [
+        'labels' => [
+            'name'               => __( 'Team Members', 'fafo' ),
+            'singular_name'      => __( 'Team Member', 'fafo' ),
+            'add_new_item'       => __( 'Add Team Member', 'fafo' ),
+            'edit_item'          => __( 'Edit Team Member', 'fafo' ),
+            'new_item'           => __( 'New Team Member', 'fafo' ),
+            'view_item'          => __( 'View Team Member', 'fafo' ),
+            'search_items'       => __( 'Search Team Members', 'fafo' ),
+            'not_found'          => __( 'No team members found', 'fafo' ),
+        ],
+        'public'        => false,
+        'show_ui'       => true,
+        'show_in_menu'  => true,
+        'show_in_rest'  => true,
+        'supports'      => [ 'title', 'thumbnail', 'page-attributes' ],
+        'menu_icon'     => 'dashicons-groups',
+        'rewrite'       => false,
+    ] );
+} );
+
+add_action( 'add_meta_boxes', function() {
+    add_meta_box( 'fafo_team_details', __( 'Team Member Details', 'fafo' ),
+        'fafo_team_meta_callback', 'fafo_team', 'normal', 'high' );
+} );
+
+function fafo_team_meta_callback( $post ) {
+    wp_nonce_field( 'fafo_team_meta', 'fafo_team_nonce' );
+    $role   = get_post_meta( $post->ID, '_fafo_team_role',     true );
+    $dept   = get_post_meta( $post->ID, '_fafo_team_dept',     true );
+    $bio    = get_post_meta( $post->ID, '_fafo_team_bio',      true );
+    $tw     = get_post_meta( $post->ID, '_fafo_team_twitter',  true );
+    $fb     = get_post_meta( $post->ID, '_fafo_team_facebook', true );
+    ?>
+    <table class="form-table" style="width:100%;">
+        <tr><th style="width:160px;"><label>Role / Title</label></th>
+            <td><input type="text" name="fafo_team_role" value="<?php echo esc_attr($role); ?>" style="width:100%;" placeholder="e.g. Editor-in-Chief"></td></tr>
+        <tr><th><label>Department</label></th>
+            <td>
+                <select name="fafo_team_dept" style="width:100%;">
+                    <?php foreach ( ['Leadership','Editorial','Reporters','Opinion','Video & Multimedia','Technology','Operations'] as $d ) : ?>
+                    <option value="<?php echo esc_attr($d); ?>" <?php selected($dept,$d); ?>><?php echo esc_html($d); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td></tr>
+        <tr><th><label>Bio</label></th>
+            <td><textarea name="fafo_team_bio" rows="4" style="width:100%;"><?php echo esc_textarea($bio); ?></textarea></td></tr>
+        <tr><th><label>Twitter / X URL</label></th>
+            <td><input type="url" name="fafo_team_twitter" value="<?php echo esc_attr($tw); ?>" style="width:100%;" placeholder="https://x.com/username"></td></tr>
+        <tr><th><label>Facebook URL</label></th>
+            <td><input type="url" name="fafo_team_facebook" value="<?php echo esc_attr($fb); ?>" style="width:100%;" placeholder="https://facebook.com/username"></td></tr>
+    </table>
+    <p style="color:#666;font-size:.85rem;margin-top:12px;">
+        <strong>Photo:</strong> Set the Featured Image (top-right panel) to use a team member photo.
+        <strong>Display order:</strong> Use the Order field in Page Attributes.
+    </p>
+    <?php
+}
+
+add_action( 'save_post_fafo_team', function( $post_id ) {
+    if ( ! isset( $_POST['fafo_team_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fafo_team_nonce'] ) ), 'fafo_team_meta' ) ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+    $fields = [ 'fafo_team_role' => '_fafo_team_role', 'fafo_team_dept' => '_fafo_team_dept',
+                'fafo_team_bio'  => '_fafo_team_bio',  'fafo_team_twitter' => '_fafo_team_twitter',
+                'fafo_team_facebook' => '_fafo_team_facebook' ];
+    foreach ( $fields as $key => $meta ) {
+        if ( isset( $_POST[ $key ] ) ) {
+            update_post_meta( $post_id, $meta, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) );
+        }
+    }
+} );
+
+// ============================================================
+// JOB LISTING CPT
+// ============================================================
+add_action( 'init', function() {
+    register_post_type( 'fafo_job', [
+        'labels' => [
+            'name'               => __( 'Job Listings', 'fafo' ),
+            'singular_name'      => __( 'Job Listing', 'fafo' ),
+            'add_new_item'       => __( 'Add Job Listing', 'fafo' ),
+            'edit_item'          => __( 'Edit Job Listing', 'fafo' ),
+            'not_found'          => __( 'No job listings found', 'fafo' ),
+        ],
+        'public'        => false,
+        'show_ui'       => true,
+        'show_in_menu'  => true,
+        'show_in_rest'  => true,
+        'supports'      => [ 'title', 'editor', 'page-attributes' ],
+        'menu_icon'     => 'dashicons-businessperson',
+        'rewrite'       => false,
+    ] );
+} );
+
+add_action( 'add_meta_boxes', function() {
+    add_meta_box( 'fafo_job_details', __( 'Job Details', 'fafo' ),
+        'fafo_job_meta_callback', 'fafo_job', 'side', 'high' );
+} );
+
+function fafo_job_meta_callback( $post ) {
+    wp_nonce_field( 'fafo_job_meta', 'fafo_job_nonce' );
+    $type  = get_post_meta( $post->ID, '_fafo_job_type',     true );
+    $loc   = get_post_meta( $post->ID, '_fafo_job_location', true );
+    $dept  = get_post_meta( $post->ID, '_fafo_job_dept',     true );
+    $reqs  = get_post_meta( $post->ID, '_fafo_job_reqs',     true );
+    ?>
+    <p><label style="font-weight:600;display:block;margin-bottom:4px;">Job Type</label>
+        <select name="fafo_job_type" style="width:100%;">
+            <?php foreach ( ['Full-Time','Part-Time','Part-Time / Contributing','Contract'] as $t ) : ?>
+            <option value="<?php echo esc_attr($t); ?>" <?php selected($type,$t); ?>><?php echo esc_html($t); ?></option>
+            <?php endforeach; ?>
+        </select></p>
+    <p><label style="font-weight:600;display:block;margin-bottom:4px;">Location</label>
+        <input type="text" name="fafo_job_location" value="<?php echo esc_attr($loc); ?>" style="width:100%;" placeholder="Remote / Washington D.C."></p>
+    <p><label style="font-weight:600;display:block;margin-bottom:4px;">Department</label>
+        <select name="fafo_job_dept" style="width:100%;">
+            <?php foreach ( ['Editorial','Opinion','Video & Multimedia','Technology','Operations','Sales'] as $d ) : ?>
+            <option value="<?php echo esc_attr($d); ?>" <?php selected($dept,$d); ?>><?php echo esc_html($d); ?></option>
+            <?php endforeach; ?>
+        </select></p>
+    <p><label style="font-weight:600;display:block;margin-bottom:4px;">Requirements <small style="font-weight:400;">(one per line)</small></label>
+        <textarea name="fafo_job_reqs" rows="6" style="width:100%;" placeholder="5+ years experience&#10;Strong writing skills"><?php echo esc_textarea($reqs); ?></textarea></p>
+    <p style="color:#666;font-size:.8rem;">Use the main editor above for the full job description.</p>
+    <?php
+}
+
+add_action( 'save_post_fafo_job', function( $post_id ) {
+    if ( ! isset( $_POST['fafo_job_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fafo_job_nonce'] ) ), 'fafo_job_meta' ) ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+    foreach ( [ 'fafo_job_type' => '_fafo_job_type', 'fafo_job_location' => '_fafo_job_location',
+                'fafo_job_dept' => '_fafo_job_dept',  'fafo_job_reqs' => '_fafo_job_reqs' ] as $k => $m ) {
+        if ( isset( $_POST[$k] ) ) update_post_meta( $post_id, $m, sanitize_textarea_field( wp_unslash( $_POST[$k] ) ) );
+    }
+} );
+
+// ============================================================
 // CUSTOM POST TYPES
 // ============================================================
 function fafo_register_post_types() {
@@ -606,7 +747,7 @@ add_action( 'wp_enqueue_scripts', function() {
         .site-logo--custom { display:flex; align-items:center; gap:14px; text-decoration:none; }
         .site-logo--custom .custom-logo-link { display:flex; align-items:center; flex-shrink:0; }
         .site-logo--custom .custom-logo { max-height:80px; width:auto; max-width:320px; display:block; }
-        .site-logo--custom .site-tagline--custom { font-family:var(--font-head); font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.65); display:block; margin-top:4px; }
+        .site-logo--custom .site-tagline--custom { font-family:var(--font-head); font-size:1.95rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.65); display:block; margin-top:4px; }
         @media(max-width:600px){ .site-logo--custom .custom-logo { max-height:52px; } }
 
         /* ---- Video player ---- */
