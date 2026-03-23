@@ -151,26 +151,15 @@ h1, h2, h3, h4, h5, h6 {
    HEADER / MASTHEAD
    ============================================================ */
 .site-header {
-  background: linear-gradient(135deg, var(--darknavy) 0%, var(--navy) 50%, var(--darkred) 100%);
+  background: #000;
   padding: 0;
   position: relative;
   overflow: hidden;
-  border-bottom: 5px solid var(--gold);
+  border-bottom: none;
 }
 
 .site-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 18px,
-      rgba(255,255,255,0.03) 18px,
-      rgba(255,255,255,0.03) 19px
-    );
-  pointer-events: none;
+  display: none;
 }
 
 .header-inner {
@@ -231,9 +220,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ---- HEADER FLAGS ---- */
 .header-flags {
-  display: flex;
-  gap: 8px;
-  opacity: 0.85;
+  display: none;
 }
 
 .flag-stripe {
