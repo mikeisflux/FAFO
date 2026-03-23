@@ -32,11 +32,11 @@
             <?php echo esc_html( date_i18n( 'l, F j, Y' ) ); ?>
         </div>
         <div class="top-social">
-            <a href="#" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i> Twitter</a>
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
-            <a href="#" aria-label="Truth Social"><i class="fas fa-flag"></i> Truth</a>
-            <a href="#" aria-label="Rumble"><i class="fas fa-play-circle"></i> Rumble</a>
-            <a href="#" aria-label="Telegram"><i class="fab fa-telegram-plane"></i> Telegram</a>
+            <a href="<?php echo esc_url( fafo_social('twitter') ); ?>" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i> Twitter</a>
+            <a href="<?php echo esc_url( fafo_social('facebook') ); ?>" aria-label="Facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+            <a href="<?php echo esc_url( fafo_social('truth') ); ?>" aria-label="Truth Social"><i class="fas fa-flag"></i> Truth</a>
+            <a href="<?php echo esc_url( fafo_social('rumble') ); ?>" aria-label="Rumble"><i class="fas fa-play-circle"></i> Rumble</a>
+            <a href="<?php echo esc_url( fafo_social('telegram') ); ?>" aria-label="Telegram"><i class="fab fa-telegram-plane"></i> Telegram</a>
         </div>
     </div>
 </div>

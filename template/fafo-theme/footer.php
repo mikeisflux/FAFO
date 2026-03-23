@@ -18,22 +18,28 @@
 
             <!-- Brand Column -->
             <div class="footer-brand">
+                <?php
+                $footer_logo_id = get_option('fafo_footer_logo');
+                $footer_logo_url = $footer_logo_id ? wp_get_attachment_image_url( $footer_logo_id, 'medium' ) : '';
+                if ( $footer_logo_url ) : ?>
+                <a href="<?php echo esc_url( home_url('/') ); ?>" class="footer-logo-img">
+                    <img src="<?php echo esc_url($footer_logo_url); ?>" alt="<?php echo esc_attr( get_bloginfo('name') ); ?>" style="max-height:60px;width:auto;display:block;margin-bottom:8px;">
+                </a>
+                <?php else : ?>
                 <a href="<?php echo esc_url( home_url('/') ); ?>" class="footer-logo">
                     F<span>A</span>FO
                 </a>
+                <?php endif; ?>
                 <span class="footer-tagline">For America First Only</span>
-                <p>
-                    FAFO News delivers bold, unapologetic conservative reporting for American patriots.
-                    We cover the stories the mainstream media refuses to tell — no spin, no agenda,
-                    just the truth for the American people.
-                </p>
+                <p><?php echo esc_html( get_option( 'fafo_footer_description', 'FAFO News delivers bold, unapologetic conservative reporting for American patriots. We cover the stories the mainstream media refuses to tell — no spin, no agenda, just the truth for the American people.' ) ); ?></p>
                 <div class="footer-social">
-                    <a href="#" aria-label="Twitter/X" title="Twitter/X"><i class="fab fa-x-twitter"></i></a>
-                    <a href="#" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Truth Social" title="Truth Social">T</a>
-                    <a href="#" aria-label="Rumble" title="Rumble"><i class="fas fa-video"></i></a>
-                    <a href="#" aria-label="Telegram" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-                    <a href="#" aria-label="RSS Feed" title="RSS"><i class="fas fa-rss"></i></a>
+                    <?php if ( fafo_social('twitter') ) : ?><a href="<?php echo esc_url( fafo_social('twitter') ); ?>" aria-label="Twitter/X" title="Twitter/X"><i class="fab fa-x-twitter"></i></a><?php endif; ?>
+                    <?php if ( fafo_social('facebook') ) : ?><a href="<?php echo esc_url( fafo_social('facebook') ); ?>" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a><?php endif; ?>
+                    <?php if ( fafo_social('truth') ) : ?><a href="<?php echo esc_url( fafo_social('truth') ); ?>" aria-label="Truth Social" title="Truth Social"><i class="fas fa-flag"></i></a><?php endif; ?>
+                    <?php if ( fafo_social('rumble') ) : ?><a href="<?php echo esc_url( fafo_social('rumble') ); ?>" aria-label="Rumble" title="Rumble"><i class="fas fa-video"></i></a><?php endif; ?>
+                    <?php if ( fafo_social('telegram') ) : ?><a href="<?php echo esc_url( fafo_social('telegram') ); ?>" aria-label="Telegram" title="Telegram"><i class="fab fa-telegram-plane"></i></a><?php endif; ?>
+                    <?php if ( fafo_social('youtube') ) : ?><a href="<?php echo esc_url( fafo_social('youtube') ); ?>" aria-label="YouTube" title="YouTube"><i class="fab fa-youtube"></i></a><?php endif; ?>
+                    <a href="<?php echo esc_url( get_feed_link() ); ?>" aria-label="RSS Feed" title="RSS"><i class="fas fa-rss"></i></a>
                 </div>
             </div>
 
@@ -90,9 +96,14 @@
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom">
             <span>
-                &copy; <?php echo date('Y'); ?>
-                <a href="<?php echo esc_url( home_url('/') ); ?>">FAFO News</a>
-                &mdash; For America First Only. All Rights Reserved.
+                <?php
+                $copyright = get_option('fafo_copyright_text', '');
+                if ( $copyright ) {
+                    echo esc_html( $copyright );
+                } else {
+                    echo '&copy; ' . date('Y') . ' <a href="' . esc_url( home_url('/') ) . '">FAFO News</a> &mdash; For America First Only. All Rights Reserved.';
+                }
+                ?>
             </span>
             <span>
                 <a href="<?php echo esc_url( fafo_page_link('privacy-policy') ); ?>">Privacy</a> &bull;

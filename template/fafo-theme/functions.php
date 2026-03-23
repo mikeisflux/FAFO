@@ -524,6 +524,58 @@ add_action( 'wp_head', 'fafo_open_graph' );
 // ============================================================
 require_once get_template_directory() . '/inc/setup-categories.php';
 require_once get_template_directory() . '/inc/template-tags.php';
+require_once get_template_directory() . '/inc/admin-settings.php';
+
+// ============================================================
+// HELPER: Social media URL from settings (falls back to '#')
+// ============================================================
+function fafo_social( $network ) {
+    static $defaults = [
+        'twitter'  => '#', 'facebook' => '#', 'truth'    => '#',
+        'rumble'   => '#', 'telegram' => '#', 'youtube'  => '',
+    ];
+    $val = get_option( 'fafo_social_' . $network, '' );
+    return $val ?: ( $defaults[ $network ] ?? '#' );
+}
+
+// ============================================================
+// HELPER: Contact email from settings
+// ============================================================
+function fafo_contact_email( $type ) {
+    $d = 'foramericafirstonly.com';
+    static $defaults = null;
+    if ( null === $defaults ) {
+        $d2 = 'foramericafirstonly.com';
+        $defaults = [
+            'newsroom'  => "news@{$d2}",  'tips'      => "tips@{$d2}",
+            'advertise' => "advertise@{$d2}", 'legal' => "legal@{$d2}",
+            'careers'   => "careers@{$d2}",  'press' => "press@{$d2}",
+        ];
+    }
+    $val = get_option( 'fafo_contact_' . $type, '' );
+    return $val ?: ( $defaults[ $type ] ?? '' );
+}
+
+// ============================================================
+// DYNAMIC CSS: Color overrides from FAFO Settings
+// ============================================================
+add_action( 'wp_head', function() {
+    $map = [
+        '--clr-red'      => get_option( 'fafo_color_red' ),
+        '--clr-navy'     => get_option( 'fafo_color_navy' ),
+        '--clr-gold'     => get_option( 'fafo_color_gold' ),
+        '--clr-darkred'  => get_option( 'fafo_color_darkred' ),
+        '--clr-darknavy' => get_option( 'fafo_color_darknavy' ),
+    ];
+    $vars = array_filter( $map );
+    if ( empty( $vars ) ) return;
+    $css = ':root{';
+    foreach ( $vars as $var => $val ) {
+        $css .= $var . ':' . esc_attr( $val ) . ';';
+    }
+    $css .= '}';
+    echo '<style id="fafo-color-overrides">' . $css . "</style>\n";
+}, 20 );
 
 // ============================================================
 // VIDEO CUSTOM POST TYPE
@@ -716,7 +768,7 @@ function fafo_maybe_run_setup() {
     if ( ! get_option( 'fafo_setup_complete' ) ) {
         fafo_create_categories();
         fafo_create_video_categories();
-        fafo_create_pages();
+        fafo_create_pages();   // also populates empty page content
         update_option( 'fafo_setup_complete', '1.0' );
         flush_rewrite_rules();
     }
@@ -844,21 +896,11 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 20 );
 
 // ============================================================
-// FAFO ADMIN SETTINGS PAGE
+// [Admin settings page is in inc/admin-settings.php]
 // ============================================================
-add_action( 'admin_menu', function() {
-    add_menu_page(
-        __( 'FAFO Settings', 'fafo' ),
-        __( 'FAFO Settings', 'fafo' ),
-        'manage_options',
-        'fafo-settings',
-        'fafo_admin_settings_page',
-        'dashicons-flag',
-        3
-    );
-} );
 
-function fafo_admin_settings_page() {
+// phpcs:disable -- legacy function kept inside dead-code block so it can be safely deleted later
+if ( false ) { function fafo__legacy_settings_page_unused() {
     if ( ! current_user_can( 'manage_options' ) ) return;
 
     // Handle save
@@ -1006,7 +1048,7 @@ function fafo_admin_settings_page() {
         </form>
     </div>
     <?php
-}
+} } // end if(false) legacy block
 
 // Sync customizer setting reads with our admin page option
 add_filter( 'theme_mod_fafo_header_tagline', function( $value ) {
