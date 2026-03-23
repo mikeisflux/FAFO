@@ -411,12 +411,23 @@ add_action( 'customize_register', 'fafo_customize_register' );
 // SIDEBAR WIDGET: About FAFO (reads from FAFO Settings)
 // ============================================================
 function fafo_widget_about() {
-    $image_id = get_option( 'fafo_about_widget_image' );
-    $title    = get_option( 'fafo_about_widget_title', 'About FAFO' );
-    $text     = get_option( 'fafo_about_widget_text',  'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.' );
+    $image_id     = get_option( 'fafo_about_widget_image' );
+    $title        = get_option( 'fafo_about_widget_title', 'About FAFO' );
+    $text         = get_option( 'fafo_about_widget_text',  'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.' );
+    $text_size    = get_option( 'fafo_about_widget_text_size',   '0.9rem' );
+    $text_weight  = get_option( 'fafo_about_widget_text_weight', '400' );
+    $text_align   = get_option( 'fafo_about_widget_text_align',  'center' );
+    $text_color   = get_option( 'fafo_about_widget_text_color',  '' );
+    $title_color  = get_option( 'fafo_about_widget_title_color', '' );
+    $widget_bg    = get_option( 'fafo_about_widget_bg_color',    '' );
+
+    $p_style = 'font-size:' . esc_attr($text_size) . ';font-weight:' . esc_attr($text_weight) . ';text-align:' . esc_attr($text_align) . ';';
+    if ( $text_color )  $p_style   .= 'color:' . esc_attr($text_color) . ';';
+    $title_style = $title_color ? 'color:' . esc_attr($title_color) . ';' : '';
+    $widget_style = $widget_bg ? 'background:' . esc_attr($widget_bg) . ';' : '';
     ?>
-    <div class="widget">
-        <h3 class="widget-title"><i class="fas fa-flag"></i> <?php echo esc_html( $title ); ?></h3>
+    <div class="widget"<?php echo $widget_style ? ' style="' . esc_attr($widget_style) . '"' : ''; ?>>
+        <h3 class="widget-title"<?php echo $title_style ? ' style="' . esc_attr($title_style) . '"' : ''; ?>><i class="fas fa-flag"></i> <?php echo esc_html( $title ); ?></h3>
         <div class="widget-body">
             <div class="about-widget">
                 <?php if ( $image_id ) :
@@ -427,7 +438,7 @@ function fafo_widget_about() {
                 else : ?>
                 <div class="fafo-big">F<span>A</span>FO</div>
                 <?php endif; ?>
-                <p><?php echo esc_html( $text ); ?></p>
+                <p style="<?php echo esc_attr( $p_style ); ?>"><?php echo esc_html( $text ); ?></p>
             </div>
         </div>
     </div>
@@ -438,18 +449,36 @@ function fafo_widget_about() {
 // SIDEBAR WIDGET: Newsletter signup (reads from FAFO Settings)
 // ============================================================
 function fafo_widget_newsletter() {
-    $heading  = get_option( 'fafo_newsletter_heading',  'JOIN THE MOVEMENT' );
-    $subtext  = get_option( 'fafo_newsletter_subtext',  'Get FAFO breaking news delivered straight to your inbox. No censorship.' );
-    $btn_text = get_option( 'fafo_newsletter_btn_text', 'SUBSCRIBE FREE' );
+    $heading        = get_option( 'fafo_newsletter_heading',        'JOIN THE MOVEMENT' );
+    $subtext        = get_option( 'fafo_newsletter_subtext',        'Get FAFO breaking news delivered straight to your inbox. No censorship.' );
+    $btn_text       = get_option( 'fafo_newsletter_btn_text',       'SUBSCRIBE FREE' );
+    $title_label    = get_option( 'fafo_newsletter_title_label',    'Stay Informed' );
+    $widget_bg      = get_option( 'fafo_newsletter_bg_color',       '' );
+    $title_color    = get_option( 'fafo_newsletter_title_color',    '' );
+    $heading_color  = get_option( 'fafo_newsletter_heading_color',  '' );
+    $heading_size   = get_option( 'fafo_newsletter_heading_size',   '' );
+    $subtext_color  = get_option( 'fafo_newsletter_subtext_color',  '' );
+    $btn_bg         = get_option( 'fafo_newsletter_btn_bg_color',   '' );
+    $btn_txt_color  = get_option( 'fafo_newsletter_btn_text_color', '' );
+
+    $widget_style  = $widget_bg     ? 'background:' . esc_attr($widget_bg) . ';'    : '';
+    $title_style   = $title_color   ? 'color:' . esc_attr($title_color) . ';'       : '';
+    $h4_style      = '';
+    if ( $heading_color ) $h4_style .= 'color:' . esc_attr($heading_color) . ';';
+    if ( $heading_size )  $h4_style .= 'font-size:' . esc_attr($heading_size) . ';';
+    $p_style       = $subtext_color ? 'color:' . esc_attr($subtext_color) . ';'     : '';
+    $btn_style     = '';
+    if ( $btn_bg )        $btn_style .= 'background:' . esc_attr($btn_bg) . ';';
+    if ( $btn_txt_color ) $btn_style .= 'color:' . esc_attr($btn_txt_color) . ';';
     ?>
-    <div class="widget">
-        <h3 class="widget-title"><i class="fas fa-envelope"></i> Stay Informed</h3>
+    <div class="widget"<?php echo $widget_style ? ' style="' . esc_attr($widget_style) . '"' : ''; ?>>
+        <h3 class="widget-title"<?php echo $title_style ? ' style="' . esc_attr($title_style) . '"' : ''; ?>><i class="fas fa-envelope"></i> <?php echo esc_html( $title_label ); ?></h3>
         <div class="newsletter-widget">
-            <h4><?php echo esc_html( $heading ); ?></h4>
-            <p><?php echo esc_html( $subtext ); ?></p>
+            <h4<?php echo $h4_style ? ' style="' . esc_attr($h4_style) . '"' : ''; ?>><?php echo esc_html( $heading ); ?></h4>
+            <p<?php echo $p_style ? ' style="' . esc_attr($p_style) . '"' : ''; ?>><?php echo esc_html( $subtext ); ?></p>
             <form id="fafoNewsletterForm" action="#" method="post">
                 <input type="email" name="email" placeholder="Your email address..." required>
-                <button type="submit">
+                <button type="submit"<?php echo $btn_style ? ' style="' . esc_attr($btn_style) . '"' : ''; ?>>
                     <i class="fas fa-bolt"></i> <?php echo esc_html( $btn_text ); ?>
                 </button>
             </form>
@@ -611,21 +640,64 @@ function fafo_contact_email( $type ) {
 // DYNAMIC CSS: Color overrides from FAFO Settings
 // ============================================================
 add_action( 'wp_head', function() {
-    $map = [
+    $css = '';
+
+    // ── Brand CSS variables ──────────────────────────────────
+    $vars_map = [
         '--clr-red'      => get_option( 'fafo_color_red' ),
         '--clr-navy'     => get_option( 'fafo_color_navy' ),
         '--clr-gold'     => get_option( 'fafo_color_gold' ),
         '--clr-darkred'  => get_option( 'fafo_color_darkred' ),
         '--clr-darknavy' => get_option( 'fafo_color_darknavy' ),
     ];
-    $vars = array_filter( $map );
-    if ( empty( $vars ) ) return;
-    $css = ':root{';
-    foreach ( $vars as $var => $val ) {
-        $css .= $var . ':' . esc_attr( $val ) . ';';
+    $root_vars = array_filter( $vars_map );
+    if ( ! empty( $root_vars ) ) {
+        $css .= ':root{';
+        foreach ( $root_vars as $var => $val ) {
+            $css .= $var . ':' . esc_attr( $val ) . ';';
+        }
+        $css .= '}';
     }
-    $css .= '}';
-    echo '<style id="fafo-color-overrides">' . $css . "</style>\n";
+
+    // ── Patriot Quote Banner ─────────────────────────────────
+    $banner_bg     = get_option( 'fafo_patriot_bg_color' );
+    $badge_color   = get_option( 'fafo_patriot_badge_color' );
+    $badge_size    = get_option( 'fafo_patriot_badge_size' );
+    $quote_color   = get_option( 'fafo_patriot_quote_color' );
+    $quote_size    = get_option( 'fafo_patriot_quote_size' );
+    $quote_italic  = get_option( 'fafo_patriot_quote_italic' );
+    $banner_css    = '';
+    if ( $banner_bg )   $banner_css .= 'background:' . esc_attr($banner_bg) . ';';
+    if ( $banner_css )  $css .= '.opinion-banner{' . $banner_css . '}';
+    $h3_css = '';
+    if ( $badge_color ) $h3_css .= 'color:' . esc_attr($badge_color) . ';';
+    if ( $badge_size )  $h3_css .= 'font-size:' . esc_attr($badge_size) . ';';
+    if ( $h3_css )      $css .= '.opinion-banner h3{' . $h3_css . '}';
+    $q_css = '';
+    if ( $quote_color )  $q_css .= 'color:' . esc_attr($quote_color) . ';';
+    if ( $quote_size )   $q_css .= 'font-size:' . esc_attr($quote_size) . ';';
+    if ( $quote_italic ) $q_css .= 'font-style:italic;';
+    if ( $q_css )        $css .= '.opinion-banner p{' . $q_css . '}';
+
+    // ── Site Footer ──────────────────────────────────────────
+    $footer_bg      = get_option( 'fafo_footer_bg_color' );
+    $footer_h_color = get_option( 'fafo_footer_heading_color' );
+    $footer_lnk     = get_option( 'fafo_footer_link_color' );
+    $footer_lnk_hov = get_option( 'fafo_footer_link_hover_color' );
+    $footer_txt     = get_option( 'fafo_footer_text_color' );
+    $footer_bar_bg  = get_option( 'fafo_footer_bar_bg_color' );
+    $footer_bar_txt = get_option( 'fafo_footer_bar_text_color' );
+    if ( $footer_bg )      $css .= '.site-footer{background:' . esc_attr($footer_bg) . ';}';
+    if ( $footer_h_color ) $css .= '.site-footer h5{color:' . esc_attr($footer_h_color) . ';}';
+    if ( $footer_txt )     $css .= '.site-footer p,.site-footer span,.footer-tagline{color:' . esc_attr($footer_txt) . ';}';
+    if ( $footer_lnk )     $css .= '.site-footer a{color:' . esc_attr($footer_lnk) . ';}';
+    if ( $footer_lnk_hov ) $css .= '.site-footer a:hover{color:' . esc_attr($footer_lnk_hov) . ';}';
+    if ( $footer_bar_bg )  $css .= '.footer-bottom{background:' . esc_attr($footer_bar_bg) . ';}';
+    if ( $footer_bar_txt ) $css .= '.footer-bottom,.footer-bottom a{color:' . esc_attr($footer_bar_txt) . ';}';
+
+    if ( $css ) {
+        echo '<style id="fafo-color-overrides">' . $css . "</style>\n";
+    }
 }, 20 );
 
 // ============================================================

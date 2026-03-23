@@ -66,14 +66,50 @@ function fafo_save_all_settings( $post ) {
         }
     }
 
+    // All hex color fields
+    $widget_color_fields = [
+        // About widget
+        'fafo_about_widget_text_color', 'fafo_about_widget_title_color', 'fafo_about_widget_bg_color',
+        // Newsletter widget
+        'fafo_newsletter_bg_color', 'fafo_newsletter_title_color', 'fafo_newsletter_heading_color',
+        'fafo_newsletter_subtext_color', 'fafo_newsletter_btn_bg_color', 'fafo_newsletter_btn_text_color',
+        // Patriot banner
+        'fafo_patriot_bg_color', 'fafo_patriot_badge_color', 'fafo_patriot_quote_color',
+        // Footer
+        'fafo_footer_bg_color', 'fafo_footer_heading_color', 'fafo_footer_link_color',
+        'fafo_footer_link_hover_color', 'fafo_footer_text_color',
+        'fafo_footer_bar_bg_color', 'fafo_footer_bar_text_color',
+    ];
+    foreach ( $widget_color_fields as $f ) {
+        if ( isset( $post[ $f ] ) ) {
+            $val = sanitize_hex_color( $post[ $f ] );
+            if ( $val ) update_option( $f, $val ); else delete_option( $f );
+        }
+    }
+
+    // Checkbox fields (store '1' or delete)
+    $checkbox_fields = [ 'fafo_patriot_quote_italic' ];
+    foreach ( $checkbox_fields as $f ) {
+        if ( ! empty( $post[ $f ] ) ) {
+            update_option( $f, '1' );
+        } else {
+            delete_option( $f );
+        }
+    }
+
     $text_fields = [
         'fafo_header_tagline', 'fafo_alert_text',
         // About widget
         'fafo_about_widget_title', 'fafo_about_widget_text',
+        'fafo_about_widget_text_size', 'fafo_about_widget_text_align',
+        'fafo_about_widget_text_weight',
         // Newsletter widget
+        'fafo_newsletter_title_label',
         'fafo_newsletter_heading', 'fafo_newsletter_subtext', 'fafo_newsletter_btn_text',
-        // Patriot quote banner (footer)
+        'fafo_newsletter_heading_size',
+        // Patriot quote banner
         'fafo_patriot_quote_badge', 'fafo_patriot_quote_text',
+        'fafo_patriot_badge_size', 'fafo_patriot_quote_size',
         // Homepage section titles
         'fafo_homepage_section1_title', 'fafo_homepage_section2_title',
         // Footer text
@@ -260,20 +296,204 @@ function _fafo_tab_branding() {
     _fafo_field( 'Header Tagline',         'fafo_header_tagline',       get_option('fafo_header_tagline', get_theme_mod('fafo_header_tagline','FOR AMERICA FIRST ONLY')), 'text', 'FOR AMERICA FIRST ONLY', 'Displayed next to the logo in the site header.' );
     _fafo_endsection();
 
-    _fafo_section( '"About FAFO" Sidebar Widget', 'Appears in the sidebar on every page — homepage, articles, category pages, etc. Image is set in the Images tab.' );
-    _fafo_field( 'Widget Title',    'fafo_about_widget_title', get_option('fafo_about_widget_title','About FAFO'),  'text', 'About FAFO',  'The widget heading (e.g. "About FAFO").' );
-    _fafo_field( 'Widget Body Text','fafo_about_widget_text',  get_option('fafo_about_widget_text', 'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.'), 'textarea', 'For America First Only...', 'Description shown below the logo/image in the About widget.' );
+    _fafo_section( '"About FAFO" Sidebar Widget', 'Appears in the sidebar on every page — homepage, articles, category pages, etc.' );
+
+    // Image upload inline
+    _fafo_image_field( 'Widget Logo / Image', 'fafo_about_widget_image',
+        'Upload an image to replace the default FAFO text graphic. Recommended: transparent PNG, ~280×120 px.' );
+
+    _fafo_field( 'Widget Title',    'fafo_about_widget_title', get_option('fafo_about_widget_title','About FAFO'), 'text', 'About FAFO', 'The widget heading.' );
+    _fafo_field( 'Widget Body Text','fafo_about_widget_text',  get_option('fafo_about_widget_text', 'For America First Only — Your #1 source for bold, unapologetic conservative news and commentary. No spin. No agenda. Just the truth.'), 'textarea', 'For America First Only...', 'Description shown below the logo/image.' );
+
+    // Text styling row
+    ?>
+    <tr>
+        <th scope="row" style="width:220px;"><label>Text Styling</label></th>
+        <td>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+
+                <!-- Font size -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Font Size</label>
+                    <select name="fafo_about_widget_text_size" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur_size = get_option('fafo_about_widget_text_size','0.9rem');
+                        $sizes = [ '0.78rem'=>'Extra Small','0.85rem'=>'Small','0.9rem'=>'Normal (default)','1rem'=>'Medium','1.1rem'=>'Large','1.2rem'=>'Extra Large' ];
+                        foreach ( $sizes as $v => $l ) echo '<option value="' . esc_attr($v) . '"' . selected($cur_size,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+
+                <!-- Font weight -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Font Weight</label>
+                    <select name="fafo_about_widget_text_weight" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur_w = get_option('fafo_about_widget_text_weight','400');
+                        foreach ( ['400'=>'Normal (default)','600'=>'Semi-Bold','700'=>'Bold'] as $v => $l )
+                            echo '<option value="' . esc_attr($v) . '"' . selected($cur_w,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+
+                <!-- Text align -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Alignment</label>
+                    <select name="fafo_about_widget_text_align" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur_a = get_option('fafo_about_widget_text_align','center');
+                        foreach ( ['center'=>'Center (default)','left'=>'Left','right'=>'Right'] as $v => $l )
+                            echo '<option value="' . esc_attr($v) . '"' . selected($cur_a,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+
+                <!-- Text color -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Text Color</label>
+                    <input type="text" name="fafo_about_widget_text_color"
+                           value="<?php echo esc_attr( get_option('fafo_about_widget_text_color','') ); ?>"
+                           class="fafo-color" data-default-color="#555555"
+                           style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #555555</span>
+                </div>
+
+                <!-- Title color -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Title Bar Color</label>
+                    <input type="text" name="fafo_about_widget_title_color"
+                           value="<?php echo esc_attr( get_option('fafo_about_widget_title_color','') ); ?>"
+                           class="fafo-color" data-default-color="#ffffff"
+                           style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: white</span>
+                </div>
+
+                <!-- Widget background -->
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Widget Background</label>
+                    <input type="text" name="fafo_about_widget_bg_color"
+                           value="<?php echo esc_attr( get_option('fafo_about_widget_bg_color','') ); ?>"
+                           class="fafo-color" data-default-color="#ffffff"
+                           style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: white</span>
+                </div>
+
+            </div>
+            <p class="description" style="margin-top:8px;">These styles apply to the About FAFO sidebar widget throughout the site.</p>
+        </td>
+    </tr>
+    <?php
+
     _fafo_endsection();
 
     _fafo_section( '"Stay Informed" Newsletter Widget', 'Sidebar newsletter signup box on the homepage and article pages.' );
-    _fafo_field( 'Widget Heading',       'fafo_newsletter_heading',   get_option('fafo_newsletter_heading',   'JOIN THE MOVEMENT'), 'text', 'JOIN THE MOVEMENT', 'Bold headline inside the newsletter widget.' );
-    _fafo_field( 'Widget Description',   'fafo_newsletter_subtext',   get_option('fafo_newsletter_subtext',   'Get FAFO breaking news delivered straight to your inbox. No censorship.'), 'textarea', 'Get FAFO breaking news...', 'Short description line beneath the heading.' );
-    _fafo_field( 'Subscribe Button Text','fafo_newsletter_btn_text',  get_option('fafo_newsletter_btn_text',  'SUBSCRIBE FREE'), 'text', 'SUBSCRIBE FREE', 'Text on the subscribe button.' );
+    _fafo_field( 'Widget Title Bar Label', 'fafo_newsletter_title_label', get_option('fafo_newsletter_title_label', 'Stay Informed'), 'text', 'Stay Informed', 'Text next to the envelope icon in the widget title bar.' );
+    _fafo_field( 'Widget Heading',         'fafo_newsletter_heading',   get_option('fafo_newsletter_heading',   'JOIN THE MOVEMENT'), 'text', 'JOIN THE MOVEMENT', 'Bold headline inside the newsletter widget.' );
+    _fafo_field( 'Widget Description',     'fafo_newsletter_subtext',   get_option('fafo_newsletter_subtext',   'Get FAFO breaking news delivered straight to your inbox. No censorship.'), 'textarea', 'Get FAFO breaking news...', 'Short description line beneath the heading.' );
+    _fafo_field( 'Subscribe Button Text',  'fafo_newsletter_btn_text',  get_option('fafo_newsletter_btn_text',  'SUBSCRIBE FREE'), 'text', 'SUBSCRIBE FREE', 'Text on the subscribe button.' );
+    ?>
+    <tr>
+        <th scope="row"><label>Color &amp; Style</label></th>
+        <td>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Widget Background</label>
+                    <input type="text" name="fafo_newsletter_bg_color" value="<?php echo esc_attr(get_option('fafo_newsletter_bg_color','')); ?>" class="fafo-color" data-default-color="#002868" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #002868</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Title Bar Color</label>
+                    <input type="text" name="fafo_newsletter_title_color" value="<?php echo esc_attr(get_option('fafo_newsletter_title_color','')); ?>" class="fafo-color" data-default-color="#ffffff" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: white</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Heading Color</label>
+                    <input type="text" name="fafo_newsletter_heading_color" value="<?php echo esc_attr(get_option('fafo_newsletter_heading_color','')); ?>" class="fafo-color" data-default-color="#FFD700" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #FFD700 gold</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Heading Size</label>
+                    <select name="fafo_newsletter_heading_size" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur = get_option('fafo_newsletter_heading_size','');
+                        foreach ( ['' => 'Default','1rem'=>'Small','1.2rem'=>'Normal','1.4rem'=>'Medium','1.6rem'=>'Large','1.8rem'=>'Extra Large'] as $v => $l )
+                            echo '<option value="' . esc_attr($v) . '"' . selected($cur,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Subtext Color</label>
+                    <input type="text" name="fafo_newsletter_subtext_color" value="<?php echo esc_attr(get_option('fafo_newsletter_subtext_color','')); ?>" class="fafo-color" data-default-color="#cccccc" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: light gray</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Button Background</label>
+                    <input type="text" name="fafo_newsletter_btn_bg_color" value="<?php echo esc_attr(get_option('fafo_newsletter_btn_bg_color','')); ?>" class="fafo-color" data-default-color="#C8102E" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #C8102E red</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Button Text Color</label>
+                    <input type="text" name="fafo_newsletter_btn_text_color" value="<?php echo esc_attr(get_option('fafo_newsletter_btn_text_color','')); ?>" class="fafo-color" data-default-color="#ffffff" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: white</span>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <?php
     _fafo_endsection();
 
     _fafo_section( 'Patriot Quote Banner', 'The decorative quote strip displayed above the footer on every page.' );
     _fafo_field( 'Banner Badge Text', 'fafo_patriot_quote_badge', get_option('fafo_patriot_quote_badge','★ FAFO NEWS ★'), 'text', '★ FAFO NEWS ★', 'Small heading/badge above the quote.' );
     _fafo_field( 'Quote Text',        'fafo_patriot_quote_text',  get_option('fafo_patriot_quote_text', '"The tree of liberty must be refreshed from time to time with the truth." — America First'), 'textarea', '"The tree of liberty..."', 'The quote displayed in the banner.' );
+    ?>
+    <tr>
+        <th scope="row"><label>Color &amp; Style</label></th>
+        <td>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Banner Background</label>
+                    <input type="text" name="fafo_patriot_bg_color" value="<?php echo esc_attr(get_option('fafo_patriot_bg_color','')); ?>" class="fafo-color" data-default-color="#C8102E" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #C8102E red</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Badge Text Color</label>
+                    <input type="text" name="fafo_patriot_badge_color" value="<?php echo esc_attr(get_option('fafo_patriot_badge_color','')); ?>" class="fafo-color" data-default-color="#FFD700" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: #FFD700 gold</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Badge Font Size</label>
+                    <select name="fafo_patriot_badge_size" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur = get_option('fafo_patriot_badge_size','');
+                        foreach ( ['' => 'Default','0.7rem'=>'Extra Small','0.85rem'=>'Small','1rem'=>'Normal','1.15rem'=>'Medium','1.3rem'=>'Large'] as $v => $l )
+                            echo '<option value="' . esc_attr($v) . '"' . selected($cur,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Quote Text Color</label>
+                    <input type="text" name="fafo_patriot_quote_color" value="<?php echo esc_attr(get_option('fafo_patriot_quote_color','')); ?>" class="fafo-color" data-default-color="#ffffff" style="width:80px;">
+                    <span style="font-size:.72rem;color:#888;display:block;margin-top:2px;">Default: white</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:4px;color:#555;">Quote Font Size</label>
+                    <select name="fafo_patriot_quote_size" style="padding:6px 10px;border:1px solid #ccd0d4;border-radius:3px;">
+                        <?php
+                        $cur = get_option('fafo_patriot_quote_size','');
+                        foreach ( ['' => 'Default','0.8rem'=>'Small','0.95rem'=>'Normal','1.05rem'=>'Medium','1.2rem'=>'Large','1.4rem'=>'Extra Large'] as $v => $l )
+                            echo '<option value="' . esc_attr($v) . '"' . selected($cur,$v,false) . '>' . esc_html($l) . '</option>';
+                        ?>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:18px;">
+                    <input type="checkbox" name="fafo_patriot_quote_italic" value="1" id="fafo_patriot_quote_italic"
+                           <?php checked( get_option('fafo_patriot_quote_italic'), '1' ); ?>>
+                    <label for="fafo_patriot_quote_italic" style="font-size:.88rem;cursor:pointer;">Italic quote text</label>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <?php
     _fafo_endsection();
 
     _fafo_section( 'Homepage Section Titles', 'Headings for the content sections on the homepage.' );
@@ -361,11 +581,22 @@ function _fafo_tab_header() {
 // ── TAB: Footer ────────────────────────────────────────────
 function _fafo_tab_footer() {
     echo '<p style="color:#444;background:#f0f6ff;border:1px solid #c5d8ff;padding:12px 16px;border-radius:4px;margin-bottom:20px;">
-        Footer text (description &amp; copyright) is in the <strong>Branding</strong> tab.<br>
+        Footer text (description &amp; copyright) is in the <strong>Branding</strong> tab.
         Footer logo image is in the <strong>Images</strong> tab.
+        Use <a href="' . esc_url(admin_url('nav-menus.php')) . '">Appearance → Menus</a> to edit the footer link columns.
     </p>';
 
-    _fafo_section( 'Footer Navigation Menus', 'Use <a href="' . esc_url(admin_url('nav-menus.php')) . '">Appearance → Menus</a> to edit the footer link columns. Widget areas are managed in <a href="' . esc_url(admin_url('widgets.php')) . '">Appearance → Widgets</a>.' );
+    _fafo_section( 'Footer Colors', 'Control the background, text, heading, and link colors in the site footer.' );
+    _fafo_field( 'Footer Background',      'fafo_footer_bg_color',        get_option('fafo_footer_bg_color',''),        'color', '#002868', 'Main footer background. Default: #002868 navy.' );
+    _fafo_field( 'Column Heading Color',   'fafo_footer_heading_color',   get_option('fafo_footer_heading_color',''),   'color', '#FFD700', 'Color of the "Topics", "FAFO Network", "Legal" headings. Default: #FFD700 gold.' );
+    _fafo_field( 'Body Text Color',        'fafo_footer_text_color',      get_option('fafo_footer_text_color',''),      'color', '#aaaaaa', 'Footer description text and tagline. Default: light gray.' );
+    _fafo_field( 'Link Color',             'fafo_footer_link_color',      get_option('fafo_footer_link_color',''),      'color', '#B8D0FF', 'Footer nav link color. Default: #B8D0FF.' );
+    _fafo_field( 'Link Hover Color',       'fafo_footer_link_hover_color',get_option('fafo_footer_link_hover_color',''),'color', '#FFD700', 'Footer nav link color on hover. Default: #FFD700 gold.' );
+    _fafo_endsection();
+
+    _fafo_section( 'Footer Bottom Bar', 'The thin strip at the very bottom of the footer.' );
+    _fafo_field( 'Bottom Bar Background',  'fafo_footer_bar_bg_color',    get_option('fafo_footer_bar_bg_color',''),    'color', '#001540', 'Bottom bar background. Default: #001540 dark navy.' );
+    _fafo_field( 'Bottom Bar Text Color',  'fafo_footer_bar_text_color',  get_option('fafo_footer_bar_text_color',''),  'color', '#888888', 'Copyright and links text color. Default: gray.' );
     _fafo_endsection();
 }
 
