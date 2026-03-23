@@ -16,12 +16,49 @@ get_header(); ?>
     </p>
 </div>
 
+<?php
+/* ----------------------------------------------------------------
+ * LIVE WOOCOMMERCE PRODUCTS (when Printful has synced products)
+ * ---------------------------------------------------------------- */
+if ( class_exists( 'WooCommerce' ) ) :
+    $wc_products = new WC_Product_Query( [
+        'limit'   => 12,
+        'orderby' => 'menu_order',
+        'order'   => 'ASC',
+        'status'  => 'publish',
+    ] );
+    $live_products = $wc_products->get_products();
+endif;
+
+if ( ! empty( $live_products ) ) :
+    // ----- LIVE SHOP -----
+    woocommerce_breadcrumb();
+    ?>
+    <div style="margin-bottom:32px;">
+        <?php
+        wc_get_template_part( 'loop/orderby' );
+        woocommerce_product_loop_start();
+        foreach ( $live_products as $wc_product ) {
+            $post_object = get_post( $wc_product->get_id() );
+            setup_postdata( $GLOBALS['post'] = $post_object );
+            wc_get_template_part( 'content', 'product' );
+        }
+        wp_reset_postdata();
+        woocommerce_product_loop_end();
+        ?>
+    </div>
+    <?php
+
+else :
+    // ----- COMING SOON SHOWCASE (no WC products published yet) -----
+?>
+
 <!-- NOTICE -->
 <div style="background:#FFF3CD;border:1px solid #FFD700;border-radius:6px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:12px;">
     <i class="fas fa-shopping-bag" style="color:#856404;font-size:1.4rem;flex-shrink:0;"></i>
     <div>
         <strong style="color:#856404;">Merch Store Coming Soon!</strong>
-        <p style="color:#856404;margin:4px 0 0;font-size:0.88rem;">Our store is being set up. Sign up for the newsletter to be notified when products go live — newsletter subscribers get 20% off their first order.</p>
+        <p style="color:#856404;margin:4px 0 0;font-size:0.88rem;">Our store is being set up via Printful. Sign up for the newsletter to be notified when products go live — newsletter subscribers get 20% off their first order.</p>
     </div>
 </div>
 
@@ -124,8 +161,13 @@ $products = [
     </a>
 </section>
 
+<?php endif; // end coming-soon vs live shop ?>
+
 </div><!-- .main-content -->
 <aside class="sidebar" role="complementary">
+    <?php if ( class_exists( 'WooCommerce' ) && ! empty( $live_products ) ) : ?>
+        <?php if ( is_active_sidebar( 'sidebar-shop' ) ) dynamic_sidebar( 'sidebar-shop' ); ?>
+    <?php else : ?>
     <div class="widget">
         <h3 class="widget-title"><i class="fas fa-tag"></i> Categories</h3>
         <div class="widget-body">
@@ -141,6 +183,8 @@ $products = [
         </div>
     </div>
     <?php if ( is_active_sidebar('sidebar-main') ) dynamic_sidebar('sidebar-main'); ?>
+    </div><!-- end else (coming-soon sidebar) -->
+    <?php endif; ?>
 </aside>
 </div><!-- .content-area -->
 </div><!-- .container -->

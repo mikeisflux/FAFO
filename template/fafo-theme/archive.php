@@ -7,7 +7,7 @@
         if ( is_category() ) {
             echo '<h1>' . single_cat_title( '', false ) . '</h1>';
             $cat_desc = category_description();
-            if ( $cat_desc ) { echo '<p>' . esc_html( $cat_desc ) . '</p>'; }
+            if ( $cat_desc ) { echo wp_kses_post( $cat_desc ); }
         } elseif ( is_tag() ) {
             echo '<h1>Tag: ' . single_tag_title( '', false ) . '</h1>';
         } elseif ( is_author() ) {

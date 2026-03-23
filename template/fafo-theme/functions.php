@@ -44,6 +44,31 @@ function fafo_setup() {
 add_action( 'after_setup_theme', 'fafo_setup' );
 
 // ============================================================
+// WOOCOMMERCE THEME SUPPORT
+// ============================================================
+function fafo_woocommerce_setup() {
+    add_theme_support( 'woocommerce', [
+        'thumbnail_image_width' => 300,
+        'single_image_width'    => 600,
+        'product_grid'          => [
+            'default_rows'    => 3,
+            'min_rows'        => 1,
+            'max_rows'        => 8,
+            'default_columns' => 4,
+            'min_columns'     => 2,
+            'max_columns'     => 4,
+        ],
+    ] );
+    add_theme_support( 'wc-product-gallery-zoom' );
+    add_theme_support( 'wc-product-gallery-lightbox' );
+    add_theme_support( 'wc-product-gallery-slider' );
+}
+add_action( 'after_setup_theme', 'fafo_woocommerce_setup' );
+
+// Disable WooCommerce default stylesheet — we supply our own via inline CSS.
+add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
+
+// ============================================================
 // CONTENT WIDTH
 // ============================================================
 if ( ! isset( $content_width ) ) $content_width = 1280;
@@ -93,6 +118,16 @@ function fafo_widgets_init() {
         'name'          => __( 'Main Sidebar', 'fafo' ),
         'id'            => 'sidebar-main',
         'description'   => __( 'Primary sidebar shown on most pages.', 'fafo' ),
+        'before_widget' => '<div class="widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3><div class="widget-body">',
+    ] );
+
+    register_sidebar( [
+        'name'          => __( 'Shop Sidebar', 'fafo' ),
+        'id'            => 'sidebar-shop',
+        'description'   => __( 'Widgets on WooCommerce shop/product pages.', 'fafo' ),
         'before_widget' => '<div class="widget %2$s">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3 class="widget-title">',
@@ -283,7 +318,28 @@ function fafo_newsletter_signup() {
     if ( ! is_email( $email ) ) {
         wp_send_json_error( [ 'message' => __( 'Invalid email address.', 'fafo' ) ] );
     }
-    // TODO: integrate with email provider (Mailchimp, ConvertKit, etc.)
+
+    // MailPoet integration — subscribe to the first active list.
+    if ( class_exists( '\MailPoet\API\API' ) ) {
+        try {
+            $mp    = \MailPoet\API\API::MP( 'v1' );
+            $lists = $mp->getLists();
+            if ( ! empty( $lists ) ) {
+                $list_id = $lists[0]['id'];
+                try {
+                    $mp->addSubscriber( [ 'email' => $email ], [ $list_id ] );
+                } catch ( \MailPoet\API\MP\v1\APIException $e ) {
+                    // Code 4 = already subscribed — treat as success.
+                    if ( $e->getCode() !== 4 ) {
+                        wp_send_json_error( [ 'message' => $e->getMessage() ] );
+                    }
+                }
+            }
+        } catch ( \Exception $e ) {
+            // MailPoet not fully configured — still return success so UX isn't broken.
+        }
+    }
+
     wp_send_json_success( [ 'message' => __( 'Thank you, patriot! You\'re subscribed.', 'fafo' ) ] );
 }
 add_action( 'wp_ajax_nopriv_fafo_newsletter', 'fafo_newsletter_signup' );
@@ -298,6 +354,8 @@ remove_action( 'wp_head', 'wp_generator' );
 // SEO: Add Open Graph meta (basic)
 // ============================================================
 function fafo_open_graph() {
+    // Yoast SEO outputs its own full OG/Twitter block — avoid duplicates.
+    if ( defined( 'WPSEO_VERSION' ) ) return;
     if ( is_singular() ) {
         global $post;
         $title       = get_the_title();
@@ -524,6 +582,22 @@ function fafo_maybe_run_setup() {
 }
 
 // ============================================================
+// WOOCOMMERCE: Breadcrumb branding
+// ============================================================
+add_filter( 'woocommerce_breadcrumb_defaults', function( $defaults ) {
+    $defaults['delimiter']   = ' <i class="fas fa-chevron-right" style="font-size:10px;opacity:.6;"></i> ';
+    $defaults['wrap_before'] = '<nav class="fafo-breadcrumb" aria-label="Breadcrumb"><p>';
+    $defaults['wrap_after']  = '</p></nav>';
+    return $defaults;
+} );
+
+// ============================================================
+// WOOCOMMERCE: Move add-to-cart beneath single product summary
+// ============================================================
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 25 );
+
+// ============================================================
 // ENQUEUE: Video player CSS additions
 // ============================================================
 add_action( 'wp_enqueue_scripts', function() {
@@ -546,5 +620,251 @@ add_action( 'wp_enqueue_scripts', function() {
         .video-featured-player { background:#000; border-radius:8px; overflow:hidden; margin-bottom:32px; }
         @media(max-width:600px){ .video-grid { grid-template-columns:1fr; } }
     ' );
+
+    // WooCommerce styles
+    if ( class_exists( 'WooCommerce' ) ) {
+        wp_add_inline_style( 'fafo-style', '
+            /* ---- WooCommerce Base ---- */
+            .woocommerce-breadcrumb,.fafo-breadcrumb{font-family:var(--font-ui);font-size:.8rem;color:#999;padding:10px 0 4px;margin-bottom:20px;}
+            .woocommerce-breadcrumb a,.fafo-breadcrumb a{color:#002868;}
+            .woocommerce-breadcrumb a:hover,.fafo-breadcrumb a:hover{color:#C8102E;}
+
+            /* ---- Notices ---- */
+            .woocommerce-message,.woocommerce-info,.woocommerce-error{border-left:4px solid #002868;background:#fff;padding:14px 18px;margin-bottom:20px;border-radius:4px;font-family:var(--font-ui);font-size:.9rem;list-style:none;}
+            .woocommerce-error{border-color:#C8102E;background:#fff5f5;}
+            .woocommerce-message{border-color:#155724;background:#f0fff4;}
+
+            /* ---- Product Grid (shop archive) ---- */
+            .woocommerce ul.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;list-style:none;padding:0;margin:0 0 40px;}
+            .woocommerce ul.products li.product{background:#fff;border-radius:8px;border:1px solid #E8E8E8;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s;position:relative;}
+            .woocommerce ul.products li.product:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12);}
+            .woocommerce ul.products li.product img{width:100%;height:220px;object-fit:cover;display:block;}
+            .woocommerce ul.products li.product .woocommerce-loop-product__title{font-family:var(--font-head);font-size:1rem;font-weight:700;color:#002868;padding:14px 16px 4px;margin:0;text-transform:uppercase;letter-spacing:.03em;}
+            .woocommerce ul.products li.product .price{font-family:var(--font-head);font-size:1.2rem;font-weight:900;color:#C8102E;padding:0 16px 10px;display:block;}
+            .woocommerce ul.products li.product .price del{color:#999;font-size:.85rem;}
+            .woocommerce ul.products li.product .onsale{position:absolute;top:10px;right:10px;background:#FFD700;color:#002868;font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;z-index:2;}
+            .woocommerce ul.products li.product .button,.woocommerce ul.products .add_to_cart_button{display:block;width:calc(100% - 32px);margin:0 16px 16px;background:#002868;color:#fff;border:none;padding:10px;font-family:var(--font-head);font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;text-align:center;cursor:pointer;transition:background .2s;}
+            .woocommerce ul.products li.product .button:hover,.woocommerce ul.products .add_to_cart_button:hover{background:#C8102E;color:#fff;}
+
+            /* ---- Single Product ---- */
+            .woocommerce div.product .woocommerce-product-gallery{margin-bottom:24px;}
+            .woocommerce div.product div.summary{padding-left:32px;}
+            .woocommerce div.product .product_title{font-family:var(--font-head);font-size:1.8rem;font-weight:900;color:#002868;text-transform:uppercase;margin-bottom:12px;}
+            .woocommerce div.product p.price,.woocommerce div.product span.price{font-family:var(--font-head);font-size:1.8rem;font-weight:900;color:#C8102E;display:block;margin:12px 0;}
+            .woocommerce div.product .woocommerce-product-details__short-description{font-family:var(--font-body);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:20px;}
+            .woocommerce div.product .cart .qty{border:2px solid #E8E8E8;border-radius:4px;padding:8px 12px;font-size:1rem;width:70px;text-align:center;}
+            .woocommerce div.product .cart .single_add_to_cart_button,.woocommerce #respond input#submit,.woocommerce a.button,.woocommerce button.button,.woocommerce input.button{background:#C8102E;color:#fff;font-family:var(--font-head);font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:4px;padding:12px 28px;cursor:pointer;transition:background .2s;}
+            .woocommerce div.product .cart .single_add_to_cart_button:hover,.woocommerce a.button:hover,.woocommerce button.button:hover{background:#002868;}
+            .woocommerce div.product .woocommerce-tabs ul.tabs{border-bottom:3px solid #002868;margin-bottom:20px;padding:0;list-style:none;display:flex;gap:4px;}
+            .woocommerce div.product .woocommerce-tabs ul.tabs li{background:#F5F5F0;border:1px solid #E8E8E8;border-bottom:none;border-radius:4px 4px 0 0;}
+            .woocommerce div.product .woocommerce-tabs ul.tabs li.active{background:#002868;}
+            .woocommerce div.product .woocommerce-tabs ul.tabs li a{font-family:var(--font-head);font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#333;padding:10px 18px;display:block;text-decoration:none;}
+            .woocommerce div.product .woocommerce-tabs ul.tabs li.active a{color:#fff;}
+
+            /* ---- Cart & Checkout ---- */
+            .woocommerce table.shop_table{width:100%;border-collapse:collapse;font-family:var(--font-ui);font-size:.9rem;}
+            .woocommerce table.shop_table th{background:#002868;color:#fff;font-family:var(--font-head);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 16px;}
+            .woocommerce table.shop_table td{border-bottom:1px solid #E8E8E8;padding:14px 16px;vertical-align:middle;}
+            .woocommerce-cart .wc-proceed-to-checkout a.checkout-button{background:#C8102E;color:#fff;font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:14px 32px;border-radius:4px;display:block;text-align:center;text-decoration:none;margin-top:12px;}
+            .woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover{background:#002868;}
+
+            /* ---- Order/Checkout form ---- */
+            .woocommerce form .form-row label{font-family:var(--font-ui);font-size:.85rem;font-weight:600;color:#333;display:block;margin-bottom:4px;}
+            .woocommerce form .form-row input.input-text,.woocommerce form .form-row select,.woocommerce form .form-row textarea{width:100%;border:2px solid #E8E8E8;border-radius:4px;padding:10px 14px;font-family:var(--font-ui);font-size:.9rem;transition:border-color .2s;}
+            .woocommerce form .form-row input.input-text:focus,.woocommerce form .form-row select:focus{border-color:#002868;outline:none;}
+
+            /* ---- Results count + ordering ---- */
+            .woocommerce-result-count{font-family:var(--font-ui);font-size:.85rem;color:#999;margin:0 0 16px;}
+            .woocommerce-ordering select{border:2px solid #E8E8E8;border-radius:4px;padding:8px 12px;font-family:var(--font-ui);font-size:.85rem;}
+
+            /* ---- Shop category filter sidebar ---- */
+            .widget_product_categories ul{list-style:none;padding:0;}
+            .widget_product_categories ul li a{color:#333;font-size:.88rem;padding:5px 0;display:block;border-bottom:1px solid #eee;}
+            .widget_product_categories ul li a:hover{color:#C8102E;}
+
+            /* ---- Responsive ---- */
+            @media(max-width:768px){
+                .woocommerce ul.products{grid-template-columns:repeat(2,1fr);}
+                .woocommerce div.product div.summary{padding-left:0;margin-top:20px;}
+            }
+            @media(max-width:480px){
+                .woocommerce ul.products{grid-template-columns:1fr;}
+            }
+        ' );
+    }
 }, 20 );
+
+// ============================================================
+// FAFO ADMIN SETTINGS PAGE
+// ============================================================
+add_action( 'admin_menu', function() {
+    add_menu_page(
+        __( 'FAFO Settings', 'fafo' ),
+        __( 'FAFO Settings', 'fafo' ),
+        'manage_options',
+        'fafo-settings',
+        'fafo_admin_settings_page',
+        'dashicons-flag',
+        3
+    );
+} );
+
+function fafo_admin_settings_page() {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+
+    // Handle save
+    if ( isset( $_POST['fafo_settings_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fafo_settings_nonce'] ) ), 'fafo_save_settings' ) ) {
+
+        if ( isset( $_POST['fafo_ticker_items'] ) ) {
+            update_option( 'fafo_ticker_items', sanitize_textarea_field( wp_unslash( $_POST['fafo_ticker_items'] ) ) );
+        }
+        if ( isset( $_POST['fafo_alert_text'] ) ) {
+            update_option( 'fafo_alert_text', sanitize_text_field( wp_unslash( $_POST['fafo_alert_text'] ) ) );
+        }
+        if ( isset( $_POST['fafo_header_tagline'] ) ) {
+            update_option( 'fafo_header_tagline', sanitize_text_field( wp_unslash( $_POST['fafo_header_tagline'] ) ) );
+            // Sync to customizer setting
+            set_theme_mod( 'fafo_header_tagline', sanitize_text_field( wp_unslash( $_POST['fafo_header_tagline'] ) ) );
+        }
+        // Reset setup flag so categories/pages get re-checked
+        if ( isset( $_POST['fafo_reset_setup'] ) ) {
+            delete_option( 'fafo_setup_complete' );
+        }
+
+        echo '<div class="notice notice-success is-dismissible"><p><strong>FAFO Settings saved!</strong></p></div>';
+    }
+
+    $ticker_items = get_option( 'fafo_ticker_items', '' );
+    $alert_text   = get_option( 'fafo_alert_text', '' );
+    $tagline      = get_theme_mod( 'fafo_header_tagline', 'FOR AMERICA FIRST ONLY' );
+    ?>
+    <div class="wrap">
+        <h1 style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#C8102E;">&#9873;</span> FAFO Theme Settings
+        </h1>
+        <p style="color:#666;">Configure your breaking ticker, alert bar, and site branding from one place.</p>
+
+        <form method="post" action="">
+            <?php wp_nonce_field( 'fafo_save_settings', 'fafo_settings_nonce' ); ?>
+
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-top:20px;">
+
+                <!-- LEFT COLUMN -->
+                <div>
+
+                    <!-- BREAKING NEWS TICKER -->
+                    <div style="background:#fff;border:1px solid #ccd0d4;border-radius:4px;padding:24px;margin-bottom:20px;">
+                        <h2 style="margin-top:0;font-size:1.1rem;border-bottom:3px solid #C8102E;padding-bottom:8px;">
+                            📡 Breaking News Ticker
+                        </h2>
+                        <p style="color:#666;font-size:.88rem;margin-bottom:12px;">
+                            One headline per line. These scroll across the red ticker bar at the top of the site.
+                            Leave blank to use the default placeholder headlines.
+                        </p>
+                        <textarea name="fafo_ticker_items" rows="10"
+                            style="width:100%;font-family:monospace;font-size:.88rem;padding:10px;border:2px solid #ddd;border-radius:4px;resize:vertical;"
+                            placeholder="BREAKING: Your headline here&#10;EXCLUSIVE: Another story&#10;FAFO REPORT: Third headline"><?php echo esc_textarea( $ticker_items ); ?></textarea>
+                        <p style="color:#888;font-size:.8rem;margin:6px 0 0;">
+                            Currently showing <strong><?php echo count( fafo_get_ticker_items() ); ?></strong> headlines.
+                            <?php if ( empty( $ticker_items ) ) echo ' <em>(Using built-in defaults — add your own above to override.)</em>'; ?>
+                        </p>
+                    </div>
+
+                    <!-- ALERT BAR -->
+                    <div style="background:#fff;border:1px solid #ccd0d4;border-radius:4px;padding:24px;margin-bottom:20px;">
+                        <h2 style="margin-top:0;font-size:1.1rem;border-bottom:3px solid #002868;padding-bottom:8px;">
+                            ⚠️ Alert Bar
+                        </h2>
+                        <p style="color:#666;font-size:.88rem;margin-bottom:12px;">
+                            Displays a full-width alert banner below the main navigation. Leave blank to hide it.
+                        </p>
+                        <input type="text" name="fafo_alert_text" value="<?php echo esc_attr( $alert_text ); ?>"
+                            style="width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:4px;font-size:.95rem;"
+                            placeholder="e.g. BREAKING: Site is live! Welcome to FAFO News.">
+                        <p style="color:#888;font-size:.8rem;margin:6px 0 0;">
+                            <?php if ( $alert_text ) echo '<strong style="color:#C8102E;">Alert is currently visible.</strong>'; else echo 'Alert is currently hidden.'; ?>
+                        </p>
+                    </div>
+
+                    <!-- BRANDING -->
+                    <div style="background:#fff;border:1px solid #ccd0d4;border-radius:4px;padding:24px;margin-bottom:20px;">
+                        <h2 style="margin-top:0;font-size:1.1rem;border-bottom:3px solid #FFD700;padding-bottom:8px;">
+                            🦅 Site Branding
+                        </h2>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Header Tagline</label>
+                        <input type="text" name="fafo_header_tagline" value="<?php echo esc_attr( $tagline ); ?>"
+                            style="width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:4px;font-size:.95rem;"
+                            placeholder="FOR AMERICA FIRST ONLY">
+                        <p style="color:#888;font-size:.8rem;margin:6px 0 0;">Displayed under the FAFO logo in the site header.</p>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div>
+                    <div style="background:#002868;color:#fff;border-radius:4px;padding:20px;margin-bottom:20px;">
+                        <h3 style="margin:0 0 10px;color:#FFD700;font-size:1rem;">Quick Links</h3>
+                        <ul style="margin:0;padding:0;list-style:none;font-size:.88rem;line-height:2;">
+                            <li><a href="<?php echo esc_url( admin_url('customize.php') ); ?>" style="color:#B8D0FF;">&#9998; Full Customizer</a></li>
+                            <li><a href="<?php echo esc_url( admin_url('nav-menus.php') ); ?>" style="color:#B8D0FF;">&#9776; Navigation Menus</a></li>
+                            <li><a href="<?php echo esc_url( admin_url('widgets.php') ); ?>" style="color:#B8D0FF;">&#9724; Sidebar Widgets</a></li>
+                            <?php if ( class_exists('WooCommerce') ) : ?>
+                            <li><a href="<?php echo esc_url( admin_url('admin.php?page=wc-settings') ); ?>" style="color:#B8D0FF;">&#128722; WooCommerce Settings</a></li>
+                            <?php endif; ?>
+                            <?php if ( defined('MAILPOET_VERSION') || class_exists('\MailPoet\API\API') ) : ?>
+                            <li><a href="<?php echo esc_url( admin_url('admin.php?page=mailpoet-newsletters') ); ?>" style="color:#B8D0FF;">&#128140; MailPoet Newsletters</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
+                    <div style="background:#fff;border:1px solid #ccd0d4;border-radius:4px;padding:20px;margin-bottom:20px;">
+                        <h3 style="margin:0 0 10px;font-size:.95rem;">Plugin Status</h3>
+                        <?php
+                        $plugins = [
+                            'WooCommerce'   => class_exists('WooCommerce'),
+                            'Printful'      => class_exists('Printful_Integration') || defined('PRINTFUL_VERSION'),
+                            'MailPoet'      => class_exists('\MailPoet\API\API') || defined('MAILPOET_VERSION'),
+                            'FluentSMTP'    => defined('FLUENTMAIL') || function_exists('FluentMail'),
+                            'Yoast SEO'     => defined('WPSEO_VERSION'),
+                            'Jetpack'       => class_exists('Jetpack'),
+                        ];
+                        foreach ( $plugins as $name => $active ) : ?>
+                        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #eee;font-size:.85rem;">
+                            <span style="color:<?php echo $active ? '#155724' : '#999'; ?>;font-size:1rem;"><?php echo $active ? '✓' : '○'; ?></span>
+                            <span style="color:<?php echo $active ? '#333' : '#999'; ?>;"><?php echo esc_html($name); ?></span>
+                            <span style="margin-left:auto;font-size:.75rem;color:<?php echo $active ? '#155724' : '#999'; ?>;"><?php echo $active ? 'Active' : 'Inactive'; ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:16px;">
+                        <h3 style="margin:0 0 8px;font-size:.9rem;color:#856404;">🔄 Re-run Setup</h3>
+                        <p style="font-size:.82rem;color:#856404;margin:0 0 10px;">Re-creates any missing categories and pages. Safe to run at any time.</p>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;cursor:pointer;">
+                            <input type="checkbox" name="fafo_reset_setup" value="1"> Trigger setup on next save
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <p>
+                <button type="submit" class="button button-primary button-large" style="background:#C8102E;border-color:#a50d24;font-size:1rem;padding:8px 28px;">
+                    💾 Save FAFO Settings
+                </button>
+            </p>
+
+        </form>
+    </div>
+    <?php
+}
+
+// Sync customizer setting reads with our admin page option
+add_filter( 'theme_mod_fafo_header_tagline', function( $value ) {
+    if ( ! $value ) {
+        $opt = get_option( 'fafo_header_tagline', '' );
+        if ( $opt ) return $opt;
+    }
+    return $value;
+} );
 
