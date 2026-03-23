@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#F5F5F0"/>
+
+  <!-- Top patriot stripe -->
+  <rect x="0" y="0" width="400" height="8" fill="#C8102E"/>
+  <rect x="400" y="0" width="400" height="8" fill="#FFFFFF"/>
+  <rect x="800" y="0" width="400" height="8" fill="#002868"/>
+
+  <!-- Breaking news ticker -->
+  <rect x="0" y="8" width="1200" height="32" fill="#C8102E"/>
+  <rect x="0" y="8" width="130" height="32" fill="#002868"/>
+  <text x="12" y="29" fill="#FFD700" font-family="Impact,sans-serif" font-size="13" font-weight="bold" letter-spacing="1">⚡ BREAKING</text>
+  <text x="148" y="29" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">AMERICA FIRST POLICIES CONTINUE TO GAIN MOMENTUM ACROSS THE NATION  ★  FAFO EXCLUSIVE: PATRIOTS RALLY IN RECORD NUMBERS</text>
+
+  <!-- Header -->
+  <rect x="0" y="40" width="1200" height="110" fill="#001540"/>
+  <!-- Flag stripes on right -->
+  <rect x="1060" y="40" width="10" height="110" fill="#C8102E"/>
+  <rect x="1075" y="40" width="10" height="110" fill="#FFFFFF"/>
+  <rect x="1090" y="40" width="10" height="110" fill="#002868"/>
+  <rect x="1105" y="40" width="10" height="110" fill="#C8102E"/>
+  <rect x="1120" y="40" width="10" height="110" fill="#FFFFFF"/>
+  <rect x="1135" y="40" width="10" height="110" fill="#002868"/>
+  <rect x="1150" y="40" width="10" height="110" fill="#C8102E"/>
+  <rect x="1165" y="40" width="10" height="110" fill="#FFFFFF"/>
+  <rect x="1180" y="40" width="10" height="110" fill="#002868"/>
+
+  <!-- FAFO Logo text -->
+  <text x="80" y="115" fill="white" font-family="Impact,Arial Narrow,sans-serif" font-size="72" font-weight="900" letter-spacing="-2">F<tspan fill="#FFD700">A</tspan>FO</text>
+  <text x="82" y="138" fill="rgba(255,255,255,0.6)" font-family="Arial,sans-serif" font-size="10" letter-spacing="4">FOR AMERICA FIRST ONLY</text>
+
+  <!-- Shield emblem -->
+  <polygon points="48,55 72,63 72,95 48,105 24,95 24,63" fill="#002868" stroke="#FFD700" stroke-width="2"/>
+  <text x="48" y="88" text-anchor="middle" fill="#FFD700" font-family="Arial" font-size="14">★★★</text>
+
+  <!-- Gold border -->
+  <rect x="0" y="150" width="1200" height="5" fill="#FFD700"/>
+
+  <!-- Navigation -->
+  <rect x="0" y="155" width="1200" height="46" fill="#002868"/>
+  <rect x="0" y="198" width="1200" height="3" fill="#C8102E"/>
+
+  <!-- Nav items -->
+  <text x="20"  y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">HOME</text>
+  <text x="100" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">POLITICS</text>
+  <text x="205" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">ECONOMY</text>
+  <text x="322" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">NATIONAL SECURITY</text>
+  <text x="505" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">BORDER</text>
+  <text x="587" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">2ND AMENDMENT</text>
+  <text x="730" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">OPINION</text>
+  <text x="820" y="183" fill="white" font-family="Impact,sans-serif" font-size="13" letter-spacing="1">VIDEO</text>
+  <!-- Search box in nav -->
+  <rect x="960" y="163" width="200" height="26" fill="rgba(255,255,255,0.15)" rx="3"/>
+  <text x="972" y="181" fill="rgba(255,255,255,0.5)" font-family="Arial,sans-serif" font-size="11">Search FAFO News...</text>
+  <rect x="1168" y="163" width="24" height="26" fill="#C8102E" rx="2"/>
+  <text x="1180" y="181" text-anchor="middle" fill="white" font-family="Arial" font-size="12">🔍</text>
+
+  <!-- HERO GRID -->
+  <!-- Main hero -->
+  <rect x="20" y="215" width="720" height="380" fill="#001540"/>
+  <rect x="20" y="215" width="720" height="380" fill="url(#heroGrad)"/>
+  <!-- Category badge -->
+  <rect x="34" y="229" width="90" height="22" fill="#C8102E"/>
+  <text x="79" y="244" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="11" letter-spacing="1">POLITICS</text>
+  <!-- Hero overlay gradient -->
+  <defs>
+    <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#002868" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="thumbGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B0000" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <!-- Watermark FAFO -->
+  <text x="490" y="370" fill="rgba(255,255,255,0.04)" font-family="Impact,sans-serif" font-size="220" font-weight="900" transform="rotate(-15,490,370)">FAFO</text>
+  <!-- Hero headline -->
+  <text x="34" y="510" fill="white" font-family="Impact,sans-serif" font-size="26" font-weight="bold">AMERICA FIRST AGENDA SWEEPS</text>
+  <text x="34" y="542" fill="white" font-family="Impact,sans-serif" font-size="26" font-weight="bold">THE NATION IN HISTORIC FASHION</text>
+  <text x="34" y="565" fill="rgba(255,255,255,0.6)" font-family="Arial,sans-serif" font-size="11">John Smith  |  March 23, 2026  |  4 min read</text>
+
+  <!-- Thumb 1 -->
+  <rect x="748" y="215" width="432" height="188" fill="#002868"/>
+  <rect x="748" y="215" width="432" height="188" fill="url(#thumbGrad)"/>
+  <rect x="762" y="229" width="80" height="20" fill="#002868"/>
+  <text x="802" y="243" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="10" letter-spacing="1">ECONOMY</text>
+  <text x="762" y="360" fill="white" font-family="Impact,sans-serif" font-size="15" font-weight="bold">PATRIOTS PUSH BACK ON</text>
+  <text x="762" y="378" fill="white" font-family="Impact,sans-serif" font-size="15" font-weight="bold">GLOBALIST TRADE DEALS</text>
+  <text x="762" y="396" fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="10">Mar 23, 2026</text>
+
+  <!-- Thumb 2 -->
+  <rect x="748" y="407" width="432" height="188" fill="#8B0000"/>
+  <rect x="748" y="407" width="432" height="188" fill="url(#thumbGrad)"/>
+  <rect x="762" y="421" width="100" height="20" fill="#C8102E"/>
+  <text x="812" y="435" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="10" letter-spacing="1">BORDER</text>
+  <text x="762" y="553" fill="white" font-family="Impact,sans-serif" font-size="15" font-weight="bold">BORDER SECURITY REACHES</text>
+  <text x="762" y="571" fill="white" font-family="Impact,sans-serif" font-size="15" font-weight="bold">ALL-TIME HIGH UNDER PATRIOTS</text>
+  <text x="762" y="589" fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="10">Mar 23, 2026</text>
+
+  <!-- LATEST NEWS section header -->
+  <rect x="20" y="615" width="6" height="28" fill="#C8102E"/>
+  <text x="34" y="634" fill="#001540" font-family="Impact,sans-serif" font-size="18" letter-spacing="1">LATEST STORIES</text>
+  <rect x="20" y="643" width="860" height="2" fill="#E8E8E8"/>
+
+  <!-- News cards row -->
+  <!-- Card 1 -->
+  <rect x="20"  y="655" width="270" height="200" fill="white" rx="1"/>
+  <rect x="20"  y="655" width="270" height="110" fill="#002868"/>
+  <rect x="30"  y="666" width="60" height="18" fill="#C8102E"/>
+  <text x="60"  y="679" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="9">POLITICS</text>
+  <text x="30"  y="780" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">CONGRESS BATTLES FOR</text>
+  <text x="30"  y="796" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">AMERICA FIRST BUDGET</text>
+  <text x="30"  y="816" fill="#999" font-family="Arial" font-size="9">John Smith  •  Mar 23  •  3 min</text>
+  <rect x="20"  y="853" width="270" height="2" fill="#E8E8E8"/>
+
+  <!-- Card 2 -->
+  <rect x="305" y="655" width="270" height="200" fill="white" rx="1"/>
+  <rect x="305" y="655" width="270" height="110" fill="#8B0000"/>
+  <rect x="315" y="666" width="60" height="18" fill="#C8102E"/>
+  <text x="345" y="679" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="9">2ND AMEND.</text>
+  <text x="315" y="780" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">SECOND AMENDMENT WINS</text>
+  <text x="315" y="796" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">BIG IN LANDMARK RULING</text>
+  <text x="315" y="816" fill="#999" font-family="Arial" font-size="9">Jane Doe  •  Mar 22  •  5 min</text>
+
+  <!-- Card 3 -->
+  <rect x="590" y="655" width="270" height="200" fill="white" rx="1"/>
+  <rect x="590" y="655" width="270" height="110" fill="#001540"/>
+  <rect x="600" y="666" width="70" height="18" fill="#002868"/>
+  <text x="635" y="679" text-anchor="middle" fill="white" font-family="Impact,sans-serif" font-size="9">FREE SPEECH</text>
+  <text x="600" y="780" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">MEDIA CENSORSHIP EXPOSED</text>
+  <text x="600" y="796" fill="#001540" font-family="Impact,sans-serif" font-size="13" font-weight="bold">IN BOMBSHELL REPORT</text>
+  <text x="600" y="816" fill="#999" font-family="Arial" font-size="9">Bob Patriot  •  Mar 22  •  6 min</text>
+
+  <!-- SIDEBAR sketch -->
+  <rect x="900" y="615" width="280" height="250" fill="white"/>
+  <!-- Widget title -->
+  <rect x="900" y="615" width="280" height="34" fill="#001540"/>
+  <rect x="900" y="615" width="4" height="34" fill="#FFD700"/>
+  <text x="914" y="637" fill="white" font-family="Impact,sans-serif" font-size="12" letter-spacing="1">🔥 TRENDING NOW</text>
+  <!-- Trending items -->
+  <text x="910" y="667" fill="#C8102E" font-family="Impact,sans-serif" font-size="22" font-weight="900">1</text>
+  <text x="938" y="660" fill="#001540" font-family="Impact,sans-serif" font-size="11">PATRIOTS RALLY ACROSS 50 STATES</text>
+  <text x="938" y="674" fill="#999" font-family="Arial" font-size="9">Mar 23</text>
+  <text x="910" y="700" fill="#002868" font-family="Impact,sans-serif" font-size="22" font-weight="900">2</text>
+  <text x="938" y="693" fill="#001540" font-family="Impact,sans-serif" font-size="11">ECONOMY SURGES UNDER</text>
+  <text x="938" y="707" fill="#001540" font-family="Impact,sans-serif" font-size="11">AMERICA FIRST POLICIES</text>
+  <text x="938" y="719" fill="#999" font-family="Arial" font-size="9">Mar 22</text>
+  <text x="910" y="740" fill="#FFD700" font-family="Impact,sans-serif" font-size="22" font-weight="900">3</text>
+  <text x="938" y="733" fill="#001540" font-family="Impact,sans-serif" font-size="11">DEEP STATE EXPOSED IN</text>
+  <text x="938" y="747" fill="#001540" font-family="Impact,sans-serif" font-size="11">SHOCKING NEW DOCUMENTS</text>
+  <text x="938" y="759" fill="#999" font-family="Arial" font-size="9">Mar 21</text>
+
+  <!-- Opinion banner -->
+  <rect x="0" y="868" width="1200" height="12" fill="#002868"/>
+  <text x="600" y="879" text-anchor="middle" fill="#FFD700" font-family="Impact,sans-serif" font-size="8" letter-spacing="3">★ FAFO NEWS ★ FOR AMERICA FIRST ONLY ★ FAFO NEWS ★ FOR AMERICA FIRST ONLY ★</text>
+
+  <!-- Footer -->
+  <rect x="0" y="880" width="1200" height="5" fill="#C8102E"/>
+  <rect x="0" y="885" width="1200" height="15" fill="#0A0A0A"/>
+  <text x="30"  y="896" fill="white"         font-family="Impact,sans-serif" font-size="10" font-weight="bold">FAFO</text>
+  <text x="85"  y="896" fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="8">© 2026 FAFO News — For America First Only. All Rights Reserved.</text>
+  <text x="900" y="896" fill="rgba(255,215,0,0.7)" font-family="Arial" font-size="8">Privacy • Terms • RSS</text>
+</svg>
