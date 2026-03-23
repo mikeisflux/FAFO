@@ -9,7 +9,7 @@
     // STATE
     // ============================================================
     const state = {
-        folder:       'inbox',
+        folder:       (window.fafoInitialFolder || 'inbox'),
         page:         1,
         perPage:      50,
         search:       '',
@@ -201,6 +201,7 @@
     // ============================================================
     async function openEmail(id) {
         const $pane = $('#fec-reading-pane');
+        // Add .open so CSS shows the pane (display:flex)
         $pane.addClass('open').html('<div class="fec-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>');
         $('#fec-main').addClass('reading');
 
@@ -277,6 +278,7 @@
     }
 
     function closeEmail() {
+        // Removing .open hides pane via CSS (display:none on base class)
         $('#fec-reading-pane').removeClass('open').html('');
         $('#fec-main').removeClass('reading');
         state.currentEmail = null;
@@ -478,9 +480,7 @@
     // EVENT BINDINGS
     // ============================================================
     $(document).ready(function () {
-
-        // Initial load
-        loadEmails();
+        // (initial load is called after setting the correct folder at bottom of ready block)
 
         // --- NAV: folder switching ---
         $(document).on('click', '.fec-nav-item[data-folder]', function (e) {
@@ -664,8 +664,14 @@
             }
         });
 
-        // Initial active nav
-        $(`.fec-nav-item[data-folder="${state.folder}"]`).addClass('active');
+        // Highlight the correct nav item based on the folder passed from PHP
+        const initFolder = window.fafoInitialFolder || 'inbox';
+        state.folder = initFolder;
+        $('.fec-nav-item').removeClass('active');
+        $(`.fec-nav-item[data-folder="${initFolder}"]`).addClass('active');
+
+        // Load initial folder
+        loadEmails();
     });
 
 })(jQuery);

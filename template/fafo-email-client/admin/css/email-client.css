@@ -2,10 +2,15 @@
    FAFO Email Client - Gmail-like Admin UI
    ============================================================ */
 
-/* Override WP admin padding for this page */
+/* Strip WP admin padding so we can control the full viewport */
+body.wp-admin #wpbody-content { padding: 0 !important; }
+body.wp-admin #wpcontent      { padding-left: 0 !important; }
+
+/* ---- Full-viewport email client wrapper ---- */
 .fafo-email-wrap {
     margin: 0 !important;
     padding: 0 !important;
+    /* Admin bar = 32px; we fill everything below it */
     height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
@@ -163,6 +168,8 @@
     border-radius: 16px;
     margin: 0 8px 8px 0;
     box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    /* required so the absolute reading-pane is contained here */
+    position: relative;
 }
 
 /* ---- EMAIL LIST TOOLBAR ---- */
@@ -313,14 +320,18 @@
 .fec-email-row.unread .fec-row-date { color: #202124; }
 
 /* ---- READING PANE ---- */
+/* Hidden by default — only visible when JS adds .open */
 .fec-reading-pane {
+    display: none;
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
     flex-direction: column;
     background: #fff;
     z-index: 100;
     overflow: hidden;
+}
+.fec-reading-pane.open {
+    display: flex;
 }
 
 .fec-email-view {

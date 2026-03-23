@@ -100,7 +100,7 @@ function fafo_email_admin_assets( $hook ) {
     wp_enqueue_script(
         'fafo-email-client',
         FAFO_EMAIL_PLUGIN_URL . 'admin/js/email-client.js',
-        [ 'jquery', 'wp-api-fetch' ],
+        [ 'jquery' ],
         FAFO_EMAIL_VERSION,
         true
     );

@@ -155,8 +155,8 @@ $active_folder = $folder_map[ $page_slug ] ?? 'inbox';
                 <div class="fec-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
             </div>
 
-            <!-- Reading pane (overlays list) -->
-            <div id="fec-reading-pane" class="fec-reading-pane" style="display:none;"></div>
+            <!-- Reading pane (overlays list, hidden by CSS until .open is added by JS) -->
+            <div id="fec-reading-pane" class="fec-reading-pane"></div>
 
         </div><!-- /.fec-main -->
 
@@ -229,25 +229,6 @@ $active_folder = $folder_map[ $page_slug ] ?? 'inbox';
 <div id="fec-toast-container" class="fec-toast-container"></div>
 
 <script>
-// Initialize with correct folder from PHP
-if (typeof window.fafoEmailData !== 'undefined') {
-    // Override default folder based on current page
-    const phpFolder = '<?php echo esc_js($active_folder); ?>';
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.fafoEmailState) {
-            window.fafoEmailState.folder = phpFolder;
-        }
-        // Highlight correct nav item
-        document.querySelectorAll('.fec-nav-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.folder === phpFolder);
-        });
-    });
-}
-
-// Reading pane show/hide
-const readingPane = document.getElementById('fec-reading-pane');
-if (readingPane) {
-    readingPane.style.display = '';
-    readingPane.style.position = 'absolute';
-}
+/* Pass the active folder to JS so it loads the right content on page load */
+window.fafoInitialFolder = '<?php echo esc_js($active_folder); ?>';
 </script>
