@@ -4,19 +4,19 @@
 <div class="category-header">
     <div class="container">
         <?php
-        if ( is_category() ) :
+        if ( is_category() ) {
             echo '<h1>' . single_cat_title( '', false ) . '</h1>';
             $cat_desc = category_description();
-            if ( $cat_desc ) echo '<p>' . esc_html( $cat_desc ) . '</p>';
-        elseif ( is_tag() ) :
+            if ( $cat_desc ) { echo '<p>' . esc_html( $cat_desc ) . '</p>'; }
+        } elseif ( is_tag() ) {
             echo '<h1>Tag: ' . single_tag_title( '', false ) . '</h1>';
-        elseif ( is_author() ) :
+        } elseif ( is_author() ) {
             echo '<h1>Author: ' . get_the_author() . '</h1>';
-        elseif ( is_date() ) :
+        } elseif ( is_date() ) {
             echo '<h1>' . get_the_date( 'F Y' ) . '</h1>';
-        else :
+        } else {
             echo '<h1>Archives</h1>';
-        endif;
+        }
         ?>
     </div>
 </div>
