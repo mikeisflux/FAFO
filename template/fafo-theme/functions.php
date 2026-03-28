@@ -882,6 +882,8 @@ function fafo_theme_activation_setup() {
     fafo_create_categories();
     fafo_create_video_categories();
     fafo_create_pages();
+    fafo_create_woo_products();
+    fafo_setup_primary_nav_menu();
     flush_rewrite_rules();
 }
 
@@ -891,7 +893,9 @@ function fafo_maybe_run_setup() {
     if ( ! get_option( 'fafo_setup_complete' ) ) {
         fafo_create_categories();
         fafo_create_video_categories();
-        fafo_create_pages();   // also populates empty page content
+        fafo_create_pages();
+        fafo_create_woo_products();
+        fafo_setup_primary_nav_menu();
         update_option( 'fafo_setup_complete', '1.0' );
         flush_rewrite_rules();
     }

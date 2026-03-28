@@ -309,3 +309,218 @@ function fafo_get_default_page_content( $slug ) {
             return '';
     }
 }
+
+// ============================================================
+// CREATE WOOCOMMERCE DEMO PRODUCTS
+// ============================================================
+function fafo_create_woo_products() {
+    if ( ! class_exists( 'WooCommerce' ) ) return;
+    if ( get_option( 'fafo_woo_products_created' ) ) return;
+
+    // ── Product categories ──────────────────────────────────
+    $cats_to_create = [
+        [ 'name' => 'T-Shirts',          'slug' => 'fafo-tshirts'    ],
+        [ 'name' => 'Hoodies',           'slug' => 'fafo-hoodies'    ],
+        [ 'name' => 'Hats & Caps',       'slug' => 'fafo-hats'       ],
+        [ 'name' => 'Mugs & Drinkware',  'slug' => 'fafo-mugs'       ],
+        [ 'name' => 'Flags & Banners',   'slug' => 'fafo-flags'      ],
+        [ 'name' => 'Stickers & Decals', 'slug' => 'fafo-stickers'   ],
+        [ 'name' => 'Accessories',       'slug' => 'fafo-accessories' ],
+    ];
+
+    $cat_ids = [];
+    foreach ( $cats_to_create as $cat ) {
+        $term = term_exists( $cat['slug'], 'product_cat' );
+        if ( ! $term ) {
+            $term = wp_insert_term( $cat['name'], 'product_cat', [ 'slug' => $cat['slug'] ] );
+        }
+        if ( ! is_wp_error( $term ) ) {
+            $cat_ids[ $cat['slug'] ] = is_array( $term ) ? (int) $term['term_id'] : (int) $term;
+        }
+    }
+
+    // ── Products ─────────────────────────────────────────────
+    $products = [
+        [
+            'title'      => '"FAFO" Classic Tee',
+            'slug'       => 'fafo-classic-tee',
+            'price'      => '29.99',
+            'sku'        => 'FAFO-TEE-001',
+            'cat'        => 'fafo-tshirts',
+            'featured'   => 'yes',
+            'order'      => 1,
+            'content'    => 'Bold FAFO logo on heavyweight 100% cotton. Available in Navy, Red, and Black. Unisex sizing S–3XL. Printed in the USA. Show the world where you stand.',
+            'excerpt'    => 'Heavyweight 100% cotton FAFO logo tee. Unisex sizing S–3XL.',
+        ],
+        [
+            'title'      => 'America First Eagle Hoodie',
+            'slug'       => 'america-first-eagle-hoodie',
+            'price'      => '54.99',
+            'sku'        => 'FAFO-HOOD-001',
+            'cat'        => 'fafo-hoodies',
+            'featured'   => 'yes',
+            'order'      => 2,
+            'content'    => 'Premium fleece pullover hoodie featuring the FAFO bald eagle emblem. Heavyweight 8oz fleece. Available S–3XL. Machine washable.',
+            'excerpt'    => 'Heavyweight 8oz fleece hoodie with FAFO eagle emblem. S–3XL.',
+        ],
+        [
+            'title'      => 'Patriot Dad Hat',
+            'slug'       => 'patriot-dad-hat',
+            'price'      => '24.99',
+            'sku'        => 'FAFO-HAT-001',
+            'cat'        => 'fafo-hats',
+            'featured'   => 'no',
+            'order'      => 3,
+            'content'    => 'Structured dad hat with embroidered FAFO eagle logo. Adjustable strap fits most. Available in Navy/Gold colorway.',
+            'excerpt'    => 'Embroidered FAFO eagle logo dad hat. Adjustable strap.',
+        ],
+        [
+            'title'      => '"No Spin Zone" Patriot Mug',
+            'slug'       => 'no-spin-zone-patriot-mug',
+            'price'      => '19.99',
+            'sku'        => 'FAFO-MUG-001',
+            'cat'        => 'fafo-mugs',
+            'featured'   => 'no',
+            'order'      => 4,
+            'content'    => '15oz ceramic mug. Dishwasher and microwave safe. Bold FAFO branding. Start every morning the America First way.',
+            'excerpt'    => '15oz ceramic mug with bold FAFO branding. Dishwasher safe.',
+        ],
+        [
+            'title'      => 'FAFO Flag (3×5 ft)',
+            'slug'       => 'fafo-flag-3x5',
+            'price'      => '39.99',
+            'sku'        => 'FAFO-FLAG-001',
+            'cat'        => 'fafo-flags',
+            'featured'   => 'yes',
+            'order'      => 5,
+            'content'    => 'Fly it proudly. 3×5 foot polyester flag with FAFO eagle design on red/white/blue. Double-stitched edges. Includes grommets for easy display.',
+            'excerpt'    => '3×5 ft double-stitched polyester flag with grommets.',
+        ],
+        [
+            'title'      => '"For America First Only" Long-Sleeve',
+            'slug'       => 'for-america-first-only-long-sleeve',
+            'price'      => '34.99',
+            'sku'        => 'FAFO-LS-001',
+            'cat'        => 'fafo-tshirts',
+            'featured'   => 'no',
+            'order'      => 6,
+            'content'    => 'Full statement shirt with the complete FAFO motto printed across the back. FAFO logo on front chest. Premium heavyweight cotton. S–3XL.',
+            'excerpt'    => 'Long-sleeve with FAFO motto on back and chest logo. S–3XL.',
+        ],
+        [
+            'title'      => 'FAFO Vinyl Sticker Pack (10)',
+            'slug'       => 'fafo-sticker-pack-10',
+            'price'      => '9.99',
+            'sku'        => 'FAFO-STICK-010',
+            'cat'        => 'fafo-stickers',
+            'featured'   => 'no',
+            'order'      => 7,
+            'content'    => '10 premium vinyl stickers — waterproof and UV-resistant. Perfect for laptops, trucks, water bottles, and gun cases. Assorted sizes and designs.',
+            'excerpt'    => '10 waterproof UV-resistant vinyl stickers in assorted designs.',
+        ],
+        [
+            'title'      => '"Deep State Enemy" Graphic Tee',
+            'slug'       => 'deep-state-enemy-tee',
+            'price'      => '29.99',
+            'sku'        => 'FAFO-TEE-002',
+            'cat'        => 'fafo-tshirts',
+            'featured'   => 'no',
+            'order'      => 8,
+            'content'    => 'Let them know where you stand. Bold graphic tee with "Proud Deep State Enemy" on the front and FAFO logo on the back. 100% cotton. S–3XL.',
+            'excerpt'    => '"Proud Deep State Enemy" graphic tee. 100% cotton. S–3XL.',
+        ],
+    ];
+
+    foreach ( $products as $prod ) {
+        // Skip if already exists
+        if ( get_page_by_path( $prod['slug'], OBJECT, 'product' ) ) continue;
+
+        $product_id = wp_insert_post( [
+            'post_title'   => $prod['title'],
+            'post_name'    => $prod['slug'],
+            'post_status'  => 'publish',
+            'post_type'    => 'product',
+            'post_content' => $prod['content'],
+            'post_excerpt' => $prod['excerpt'],
+            'menu_order'   => $prod['order'],
+            'post_author'  => 1,
+        ] );
+
+        if ( is_wp_error( $product_id ) || ! $product_id ) continue;
+
+        // Product type
+        wp_set_object_terms( $product_id, 'simple', 'product_type' );
+
+        // Product category
+        if ( isset( $cat_ids[ $prod['cat'] ] ) ) {
+            wp_set_object_terms( $product_id, [ $cat_ids[ $prod['cat'] ] ], 'product_cat' );
+        }
+
+        // WooCommerce meta
+        update_post_meta( $product_id, '_price',         $prod['price'] );
+        update_post_meta( $product_id, '_regular_price', $prod['price'] );
+        update_post_meta( $product_id, '_sku',           $prod['sku']   );
+        update_post_meta( $product_id, '_stock_status',  'instock'      );
+        update_post_meta( $product_id, '_manage_stock',  'no'           );
+        update_post_meta( $product_id, '_virtual',       'no'           );
+        update_post_meta( $product_id, '_downloadable',  'no'           );
+        update_post_meta( $product_id, '_featured',      $prod['featured'] );
+        update_post_meta( $product_id, '_visibility',    'visible'      );
+        update_post_meta( $product_id, 'total_sales',    '0'            );
+    }
+
+    update_option( 'fafo_woo_products_created', '1.0' );
+
+    // Clear WC product caches
+    if ( function_exists( 'wc_delete_product_transients' ) ) {
+        wc_delete_product_transients();
+    }
+}
+
+// ============================================================
+// CREATE PRIMARY NAV MENU PROGRAMMATICALLY
+// ============================================================
+function fafo_setup_primary_nav_menu() {
+    // Only run if no menu is already assigned to 'primary'
+    $locations = get_nav_menu_locations();
+    if ( ! empty( $locations['primary'] ) ) return;
+
+    $menu_name = 'FAFO Primary Menu';
+    $existing  = wp_get_nav_menu_object( $menu_name );
+    $menu_id   = $existing ? (int) $existing->term_id : wp_create_nav_menu( $menu_name );
+    if ( is_wp_error( $menu_id ) || ! $menu_id ) return;
+
+    // Only add items if the menu is empty
+    if ( ! empty( wp_get_nav_menu_items( $menu_id ) ) ) {
+        // Menu already has items — just assign and return
+        $locations['primary'] = $menu_id;
+        set_theme_mod( 'nav_menu_locations', $locations );
+        return;
+    }
+
+    $items = [
+        [ 'title' => 'Home',              'url' => home_url('/'),                               'order' => 1 ],
+        [ 'title' => 'Politics',          'url' => home_url('/category/politics/'),              'order' => 2 ],
+        [ 'title' => 'Economy',           'url' => home_url('/category/economy/'),               'order' => 3 ],
+        [ 'title' => 'National Security', 'url' => home_url('/category/national-security/'),     'order' => 4 ],
+        [ 'title' => 'Border',            'url' => home_url('/category/border-immigration/'),    'order' => 5 ],
+        [ 'title' => 'Opinion',           'url' => home_url('/category/opinion/'),               'order' => 6 ],
+        [ 'title' => 'Video',             'url' => home_url('/video/'),                          'order' => 7 ],
+        [ 'title' => 'Merch',             'url' => home_url('/merch/'),                          'order' => 8 ],
+        [ 'title' => 'About',             'url' => home_url('/about/'),                          'order' => 9 ],
+    ];
+
+    foreach ( $items as $item ) {
+        wp_update_nav_menu_item( $menu_id, 0, [
+            'menu-item-title'    => $item['title'],
+            'menu-item-url'      => $item['url'],
+            'menu-item-status'   => 'publish',
+            'menu-item-type'     => 'custom',
+            'menu-item-position' => $item['order'],
+        ] );
+    }
+
+    // Assign to the 'primary' theme location
+    $locations['primary'] = $menu_id;
+    set_theme_mod( 'nav_menu_locations', $locations );
+}

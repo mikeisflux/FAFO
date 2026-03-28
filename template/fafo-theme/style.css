@@ -340,6 +340,21 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-search button:hover { background: var(--darkred); }
 
+/* ---- Merch nav CTA button ---- */
+.nav-menu .nav-merch > a {
+  background: var(--gold);
+  color: var(--darknavy) !important;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  border-right: none;
+  margin-left: 4px;
+}
+.nav-menu .nav-merch > a:hover {
+  background: #ffe44d;
+  color: var(--darknavy) !important;
+}
+.nav-menu .nav-merch > a::after { display: none; }
+
 /* ---- Mobile Hamburger ---- */
 .nav-toggle {
   display: none;

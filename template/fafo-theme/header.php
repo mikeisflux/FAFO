@@ -168,6 +168,8 @@ function fafo_fallback_nav() {
     foreach ( $pages as $label => $url ) {
         echo '<li><a href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
     }
+    // Merch as a highlighted CTA button
+    echo '<li class="nav-merch"><a href="' . esc_url( fafo_page_link('merch') ) . '"><i class="fas fa-shopping-bag"></i> Merch</a></li>';
     echo '</ul>';
 }
 ?>

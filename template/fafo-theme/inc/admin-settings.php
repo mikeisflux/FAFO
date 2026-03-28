@@ -146,10 +146,29 @@ function fafo_save_all_settings( $post ) {
         }
     }
 
-    // Re-run setup
+    // Re-run full setup (categories, pages, nav menu)
     if ( ! empty( $post['fafo_reset_setup'] ) ) {
         delete_option( 'fafo_setup_complete' );
         delete_option( 'fafo_content_populated' );
+    }
+
+    // Re-seed WooCommerce demo products
+    if ( ! empty( $post['fafo_reseed_woo'] ) ) {
+        delete_option( 'fafo_woo_products_created' );
+        if ( function_exists( 'fafo_create_woo_products' ) ) {
+            fafo_create_woo_products();
+        }
+    }
+
+    // Re-create primary nav menu
+    if ( ! empty( $post['fafo_reset_nav'] ) ) {
+        // Remove assigned primary menu so fafo_setup_primary_nav_menu() will recreate it
+        $locs = get_nav_menu_locations();
+        unset( $locs['primary'] );
+        set_theme_mod( 'nav_menu_locations', $locs );
+        if ( function_exists( 'fafo_setup_primary_nav_menu' ) ) {
+            fafo_setup_primary_nav_menu();
+        }
     }
 }
 
@@ -645,15 +664,47 @@ function _fafo_tab_system() {
                 </ul>
             </div>
 
-            <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:16px;">
-                <h3 style="margin:0 0 8px;font-size:.95rem;color:#856404;">🔄 Re-run Setup</h3>
-                <p style="font-size:.82rem;color:#856404;margin:0 0 10px;">
-                    Re-creates missing categories, pages, and pre-populates page content from defaults. Safe to run at any time — only fills in content that is currently empty.
-                </p>
-                <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-                    <input type="checkbox" name="fafo_reset_setup" value="1">
-                    Trigger setup on next save
-                </label>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+
+                <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:16px;">
+                    <h3 style="margin:0 0 6px;font-size:.95rem;color:#856404;">🔄 Re-run Full Setup</h3>
+                    <p style="font-size:.82rem;color:#856404;margin:0 0 10px;">
+                        Re-creates missing categories, pages, nav menu, and pre-populates page content from defaults. Only fills in content that is currently empty.
+                    </p>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+                        <input type="checkbox" name="fafo_reset_setup" value="1">
+                        Trigger full setup on next save
+                    </label>
+                </div>
+
+                <div style="background:#f0fff4;border:1px solid #28a745;border-radius:4px;padding:16px;">
+                    <h3 style="margin:0 0 6px;font-size:.95rem;color:#155724;">🛒 Seed WooCommerce Demo Products</h3>
+                    <p style="font-size:.82rem;color:#155724;margin:0 0 10px;">
+                        Creates 8 FAFO patriot merch products and 7 product categories if they don't already exist. Run this if WooCommerce wasn't active when the theme was installed.
+                        <?php
+                        $woo_done = get_option('fafo_woo_products_created');
+                        $woo_count = class_exists('WooCommerce') ? (int)(new WP_Query(['post_type'=>'product','posts_per_page'=>-1,'fields'=>'ids']))->found_posts : 0;
+                        if ( $woo_done ) echo ' <strong>Status: ' . $woo_count . ' product(s) in store.</strong>';
+                        elseif ( ! class_exists('WooCommerce') ) echo ' <strong style="color:#C8102E;">⚠ WooCommerce is not active.</strong>';
+                        ?>
+                    </p>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+                        <input type="checkbox" name="fafo_reseed_woo" value="1">
+                        Create / re-seed WooCommerce demo products on save
+                    </label>
+                </div>
+
+                <div style="background:#f0f6ff;border:1px solid #c5d8ff;border-radius:4px;padding:16px;">
+                    <h3 style="margin:0 0 6px;font-size:.95rem;color:#002868;">☰ Reset Primary Nav Menu</h3>
+                    <p style="font-size:.82rem;color:#002868;margin:0 0 10px;">
+                        Re-creates and assigns the FAFO primary navigation menu (Home, Politics, Economy, National Security, Border, Opinion, Video, Merch, About). Only assigns if no menu is currently set, unless this box is checked.
+                    </p>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+                        <input type="checkbox" name="fafo_reset_nav" value="1">
+                        Reset nav menu on next save
+                    </label>
+                </div>
+
             </div>
         </div>
     </div>
